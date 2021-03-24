@@ -1,0 +1,36 @@
+{
+  "name": "@hemes/core",
+  "version": "0.0.0",
+  "description": "Hemes core package",
+  "author": "André Victor <andrevcv1@gmail.com>",
+  "homepage": "https://github.com/PaymeTrade/hemes#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "typings/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist",
+    "typings"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaymeTrade/hemes.git"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "bugs": {
+    "url": "https://github.com/PaymeTrade/hemes/issues"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "fa2e0d0514775388df64a3e5df0e0d95e810e0c3"
+}

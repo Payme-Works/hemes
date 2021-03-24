@@ -1,0 +1,25 @@
+{
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "packages": [
+    "packages/*"
+  ],
+  "command": {
+    "version": {
+      "exact": true,
+      "conventionalCommits": true,
+      "message": "chore(release): Publish %s"
+    },
+    "publish": {
+      "npmClient": "npm",
+      "allowBranch": [
+        "main",
+        "develop"
+      ],
+      "conventionalCommits": true,
+      "message": "chore(release): Publish %s",
+      "registry": "https://registry.npmjs.org/"
+    }
+  },
+  "version": "0.0.0"
+}
