@@ -1,6 +1,6 @@
 {
   "name": "@hemes/iqoption",
-  "version": "0.0.0",
+  "version": "0.0.1-next.0",
   "description": "Hemes IQ Option implementation",
   "author": "André Victor <andrevcv1@gmail.com>",
   "homepage": "https://github.com/PaymeTrade/hemes#readme",
@@ -27,7 +27,7 @@
     "url": "https://github.com/PaymeTrade/hemes/issues"
   },
   "dependencies": {
-    "@hemes/core": "0.0.0"
+    "@hemes/core": "0.0.1-next.0"
   },
   "publishConfig": {
     "access": "public"
