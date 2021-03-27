@@ -32,5 +32,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "fa2e0d0514775388df64a3e5df0e0d95e810e0c3"
+  "gitHead": "fa2e0d0514775388df64a3e5df0e0d95e810e0c3",
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/ws": "^7.4.0",
+    "dotenv": "^8.2.0"
+  }
 }

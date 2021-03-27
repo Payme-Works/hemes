@@ -1,13 +1,13 @@
 import { ProviderConstructor, BaseHemes, Provider } from './types'
 
 export class Hemes<PC extends ProviderConstructor> implements BaseHemes {
-  private HemesProvider: PC
+  private provider: Provider
 
-  constructor(provider: PC) {
-    this.HemesProvider = provider
+  constructor(HemesProvider: PC) {
+    this.provider = new HemesProvider(this)
   }
 
-  getProvider(): Provider {
-    return new this.HemesProvider(this)
+  public getProvider(): Provider {
+    return this.provider
   }
 }

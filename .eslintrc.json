@@ -18,8 +18,17 @@
     "prettier",
     "import-helpers"
   ],
+  "overrides": [
+    {
+      "files": ["**/types.ts"],
+      "rules": {
+        "no-use-before-define": "off"
+      }
+    }
+  ],
   "rules": {
     "prettier/prettier": "error",
+    "no-useless-constructor": "off",
     "import-helpers/order-imports": [
       "warn",
       {

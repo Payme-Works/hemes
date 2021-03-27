@@ -1,13 +1,33 @@
-import { Hemes } from '@hemes/core'
+import { Provider, Hemes } from '@hemes/core'
 import { IQOptionProvider } from '@hemes/iqoption'
 
-describe('IQOptionProvider', () => {
-  test('it be able to instance new Hemes with IQOption provider', async () => {
-    const hemes = new Hemes(IQOptionProvider).getProvider()
+jest.mock(
+  'ws',
+  () =>
+    class MockWebSocket {
+      emit() {
+        return jest.fn()
+      }
 
-    await hemes.signIn({
-      email: 'test@test.com',
-      password: '123456',
+      on() {
+        return jest.fn()
+      }
+    }
+)
+
+let hemes: Provider
+
+describe('IQOptionProvider', () => {
+  beforeEach(() => {
+    hemes = new Hemes(IQOptionProvider).getProvider()
+  })
+
+  it('should be able to log in with correct credentials', async () => {
+    const result = await hemes.logIn({
+      email: String(process.env.TEST_IQOPTION_ACCOUNT_EMAIL),
+      password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
     })
+
+    expect(result).toBeTruthy()
   })
 })

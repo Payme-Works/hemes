@@ -4,9 +4,9 @@ This folder contains Hemes for IQ Option examples for different types of actions
 them were tested and may work properly. You can also customize them for your
 needs.
 
-| Name    | Link                                                              |
-| ------- | ----------------------------------------------------------------- |
-| Sign In | [JavaScript](./signIn.js) - [TypeScript](./typescript/signIn.tsx) |
+| Name   | Link                                                            |
+| ------ | --------------------------------------------------------------- |
+| Log In | [JavaScript](./logIn.js) - [TypeScript](./typescript/logIn.tsx) |
 
 ## Add an example
 
