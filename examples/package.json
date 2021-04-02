@@ -1,0 +1,10 @@
+{
+  "name": "@hemes/example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@hemes/core": "*",
+    "@hemes/iqoption": "*"
+  }
+}
