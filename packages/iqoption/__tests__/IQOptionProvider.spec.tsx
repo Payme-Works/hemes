@@ -1,19 +1,22 @@
 import { Provider, Hemes } from '@hemes/core'
 import { IQOptionProvider } from '@hemes/iqoption'
 
-jest.mock(
-  'ws',
-  () =>
-    class MockWebSocket {
-      emit() {
-        return jest.fn()
-      }
+const mockWebSocketClient = {
+  subscribe: jest.fn(),
+  send: jest.fn(),
+}
 
-      on() {
-        return jest.fn()
-      }
+jest.mock('../lib/websocket/WebSocketClient', () => ({
+  WebSocketClient: class MockWebSocketClient {
+    subscribe() {
+      return mockWebSocketClient.subscribe()
     }
-)
+
+    send(...args: any[]) {
+      return mockWebSocketClient.send(...args)
+    }
+  },
+}))
 
 let hemes: Provider
 
@@ -29,5 +32,8 @@ describe('IQOptionProvider', () => {
     })
 
     expect(result).toBeTruthy()
+
+    expect(mockWebSocketClient.subscribe).toBeCalled()
+    expect(mockWebSocketClient.send).toBeCalledWith('ssid', expect.any(String))
   })
 })
