@@ -1,1 +1,4 @@
-export type Something = 'something'
+export interface WebSocketEvent<T = any> {
+  name: string
+  msg: T
+}

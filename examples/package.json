@@ -1,10 +1,17 @@
 {
   "name": "@hemes/example",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "start": "cd .. && yarn build && cd examples && yarn --force && yarn ts-node"
+  },
   "dependencies": {
-    "@hemes/core": "*",
-    "@hemes/iqoption": "*"
+    "@hemes/core": "../packages/core",
+    "@hemes/iqoption": "../packages/iqoption",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
   }
 }
