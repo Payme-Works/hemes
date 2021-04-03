@@ -28,6 +28,7 @@
   ],
   "rules": {
     "prettier/prettier": "error",
+    "camelcase": "off",
     "no-useless-constructor": "off",
     "import-helpers/order-imports": [
       "warn",
@@ -36,7 +37,8 @@
         "groups": [
           ["module", "absolute"],
           "/^@/",
-          ["parent", "sibling", "index"]
+          ["parent", "index"],
+          "sibling"
         ],
         "alphabetize": { "order": "asc", "ignoreCase": true }
       }

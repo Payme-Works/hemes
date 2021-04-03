@@ -1,31 +1,41 @@
 import axios, { AxiosInstance } from 'axios'
 
 import { Provider, Credentials } from '@hemes/core'
-import { IQWebSocket } from './IQWebSocket'
+
+import { WebSocketClient } from './websocket/WebSocketClient'
 
 export class IQOptionProvider implements Provider {
-  private loginApi: AxiosInstance
-  private ws: IQWebSocket
+  private api: AxiosInstance
+  private webSocket: WebSocketClient
 
   constructor() {
-    this.loginApi = axios.create({
-      baseURL: 'https://auth.iqoption.com/api/v2',
+    this.api = axios.create({
+      baseURL: 'https://iqoption.com/api',
     })
 
-    this.ws = new IQWebSocket()
+    this.webSocket = new WebSocketClient()
   }
 
   public async logIn({ email, password }: Credentials): Promise<boolean> {
     console.log('Credentials ->', { email, password })
 
-    const response = await this.loginApi.post('/login', {
+    this.webSocket.subscribe()
+
+    const authApi = axios.create({
+      baseURL: 'https://auth.iqoption.com/api/v2',
+    })
+
+    const response = await authApi.post('/login', {
       identifier: email,
       password,
     })
 
     console.log('Login Response ->', response.data)
-    if (response.data.code == 'success') {
-      this.ws.sendMessage('ssid', response.data.ssid)
+
+    this.api.defaults.headers.Authorization = `SSID ${response.data.ssid}`
+
+    if (response.data.code === 'success') {
+      this.webSocket.send('ssid', response.data.ssid)
     }
 
     return true

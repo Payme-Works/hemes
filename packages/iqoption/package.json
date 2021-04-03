@@ -26,15 +26,17 @@
   "bugs": {
     "url": "https://github.com/PaymeTrade/hemes/issues"
   },
-  "dependencies": {
-    "@hemes/core": "0.0.1-next.0",
-    "axios": "^0.21.1"
-  },
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "@hemes/core": "0.0.1-next.0",
+    "axios": "^0.21.1",
+    "md5": "2.3.0"
+  },
   "gitHead": "fa2e0d0514775388df64a3e5df0e0d95e810e0c3",
   "devDependencies": {
+    "@types/md5": "^2.3.0",
     "@types/ws": "^7.4.0",
     "bufferutil": "^4.0.3",
     "utf-8-validate": "^5.0.4"

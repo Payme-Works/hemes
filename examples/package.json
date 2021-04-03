@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "cd .. && yarn build && cd examples && yarn --force && yarn ts-node"
+    "start": "cd .. && yarn --force && yarn build && cd examples && yarn --force && yarn ts-node"
   },
   "dependencies": {
     "@hemes/core": "../packages/core",
