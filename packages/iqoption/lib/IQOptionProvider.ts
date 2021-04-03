@@ -7,8 +7,6 @@ export class IQOptionProvider implements Provider {
   private loginApi: AxiosInstance
   private ws: IQWebSocket
 
-  public ssid: string
-
   constructor() {
     this.loginApi = axios.create({
       baseURL: 'https://auth.iqoption.com/api/v2',
@@ -28,8 +26,6 @@ export class IQOptionProvider implements Provider {
     console.log('Login Response ->', response.data)
     if (response.data.code == 'success') {
       this.ws.sendMessage('ssid', response.data.ssid)
-
-      this.ssid = response.data.ssid
     }
 
     return true
