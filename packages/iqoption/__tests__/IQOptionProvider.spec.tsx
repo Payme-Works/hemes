@@ -1,5 +1,5 @@
-import { Provider, Hemes } from '@hemes/core'
-import { IQOptionProvider } from '@hemes/iqoption'
+import { Hemes } from '@hemes/core'
+import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
 
 const mockWebSocketClient = {
   subscribe: jest.fn(),
@@ -18,11 +18,11 @@ jest.mock('../lib/websocket/WebSocketClient', () => ({
   },
 }))
 
-let hemes: Provider
+let hemes: BaseIQOptionProvider
 
 describe('IQOptionProvider', () => {
   beforeEach(() => {
-    hemes = new Hemes(IQOptionProvider).getProvider()
+    hemes = new Hemes(IQOptionProvider).getProvider<BaseIQOptionProvider>()
   })
 
   it('should be able to log in with correct credentials', async () => {

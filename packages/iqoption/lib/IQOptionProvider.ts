@@ -1,10 +1,14 @@
 import axios, { AxiosInstance } from 'axios'
 
-import { Provider, Credentials } from '@hemes/core'
-
+import {
+  BaseIQOptionProvider,
+  Credentials,
+  WebSocketEventHistory,
+} from './types'
+import { Profile, Balance } from './websocket/events/Profile'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
-export class IQOptionProvider implements Provider {
+export class IQOptionProvider implements BaseIQOptionProvider {
   private api: AxiosInstance
   private webSocket: WebSocketClient
 
@@ -41,5 +45,29 @@ export class IQOptionProvider implements Provider {
     return true
   }
 
-  public async getProfile() {}
+  public async getProfile(): Promise<Profile> {
+    const profileEvent = this.webSocket.history.find(
+      event => event.name === 'profile'
+    ) as WebSocketEventHistory<Profile>
+
+    this.webSocket.send('sendMessage', {
+      name: 'get-balances',
+      version: '1.0',
+    })
+
+    await new Promise(resolve => setTimeout(resolve, 2500))
+
+    const balances = await new Promise<Balance[]>(resolve => {
+      const event = this.webSocket.history.find(
+        event => event.name === 'balances'
+      ) as WebSocketEventHistory<Balance[]>
+
+      resolve(event.msg)
+    })
+
+    return {
+      ...profileEvent.msg,
+      balances,
+    }
+  }
 }

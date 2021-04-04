@@ -1,7 +1,7 @@
 import '../../loadEnv'
 
 import { Hemes } from '@hemes/core'
-import { BaseIQOptionProvider, IQOptionProvider } from '@hemes/iqoption'
+import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
   const hemes = new Hemes(IQOptionProvider).getProvider<BaseIQOptionProvider>()
@@ -10,6 +10,12 @@ async function run() {
     email: String(process.env.TEST_IQOPTION_ACCOUNT_EMAIL),
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
+
+  await new Promise(resolve => setTimeout(resolve, 5000))
+
+  const profile = await hemes.getProfile()
+
+  console.log(profile)
 }
 
 run()

@@ -1,7 +1,7 @@
 import { WebSocketEvent } from '../../types'
 import { BaseEventHandler } from '../BaseEventHandler'
 
-export class Heartbeat extends BaseEventHandler<number> {
+export class HeartbeatEvent extends BaseEventHandler<number> {
   public get name(): string {
     return 'heartbeat'
   }

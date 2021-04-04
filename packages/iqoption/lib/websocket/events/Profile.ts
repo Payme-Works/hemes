@@ -1,7 +1,7 @@
 import { WebSocketEvent } from '../../types'
 import { BaseEventHandler } from '../BaseEventHandler'
 
-interface IBalance {
+export interface Balance {
   id: number
   user_id: number
   type: number
@@ -20,7 +20,7 @@ interface IBalance {
   equivalent: number
 }
 
-interface IProfile {
+export interface Profile {
   account_status: string
   address: string
   auth_two_factor: string
@@ -28,7 +28,7 @@ interface IProfile {
   balance: number
   balance_id: number
   balance_type: number
-  balances: IBalance[]
+  balances: Balance[]
   birthdate: number
   bonus_total_wager: number
   bonus_wager: number
@@ -50,7 +50,11 @@ interface IProfile {
   finance_state: number
   first_name: string
   flag: string
-  forget_status: { status: string; created: string; expires: string }
+  forget_status: {
+    status: string
+    created: string
+    expires: string
+  }
   functions: any[]
   gender: string
   group_id: number
@@ -119,14 +123,14 @@ interface IProfile {
   welcome_splash: number
 }
 
-export class Profile extends BaseEventHandler<IProfile> {
-  public profile: IProfile
+export class ProfileEvent extends BaseEventHandler<Profile> {
+  public profile: Profile
 
   public get name(): string {
     return 'profile'
   }
 
-  public handle(event: WebSocketEvent<IProfile>): void {
+  public handle(event: WebSocketEvent<Profile>): void {
     this.profile = event.msg
   }
 }

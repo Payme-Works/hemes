@@ -1,18 +1,26 @@
 import md5 from 'md5'
 import WebSocket from 'ws'
 
-import { WebSocketEvent, WebSocketEventHandler } from '../types'
+import {
+  WebSocketEvent,
+  WebSocketEventHistory,
+  WebSocketEventHandler,
+} from '../types'
 
-import { Heartbeat } from './events/Heartbeat'
-import { Profile } from './events/Profile'
+import { HeartbeatEvent } from './events/Heartbeat'
+import { ProfileEvent } from './events/Profile'
 
 export class WebSocketClient {
   private webSocket: WebSocket
 
   private eventHandlers: WebSocketEventHandler[]
 
+  public history: WebSocketEventHistory[]
+
   constructor() {
-    this.eventHandlers = [new Heartbeat(this), new Profile(this)]
+    this.eventHandlers = [new HeartbeatEvent(this), new ProfileEvent(this)]
+
+    this.history = []
   }
 
   public subscribe() {
@@ -21,7 +29,14 @@ export class WebSocketClient {
     this.webSocket.on('message', (originEvent: string) => {
       const event = JSON.parse(originEvent) as WebSocketEvent
 
-      console.log('⬇ ', event)
+      this.history.push({
+        ...event,
+        at: Date.now(),
+      })
+
+      if (!['heartbeat', 'timeSync'].includes(event.name)) {
+        console.log('⬇ ', event)
+      }
 
       const eventHandler = this.eventHandlers.find(
         eventHandler => eventHandler.name === event.name
@@ -57,7 +72,9 @@ export class WebSocketClient {
 
       this.webSocket.send(JSON.stringify(event))
 
-      console.log('⬆ ', event)
+      if (!['heartbeat', 'timeSync'].includes(event.name)) {
+        console.log('⬆ ', event)
+      }
     } catch (error) {
       console.error(error)
     }
