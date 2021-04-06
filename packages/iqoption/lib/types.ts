@@ -11,9 +11,20 @@ export interface BaseIQOptionProvider {
   getProfile(): Promise<Profile>
 }
 
+export interface WaitForOptions {
+  maxAttempts?: number
+  delay?: number
+}
+
 export interface BaseWebSocketClient {
-  webSocket: WebSocket
-  eventHandlers: WebSocketEventHandler[]
+  history: WebSocketEventHistory[]
+
+  subscribe(): void
+  send<M = any>(name: string, message: M): Promise<void>
+  waitFor<T = any>(
+    event: string,
+    options?: WaitForOptions
+  ): Promise<T | undefined>
 }
 
 export interface WebSocketEvent<T = any> {

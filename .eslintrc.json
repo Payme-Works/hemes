@@ -30,6 +30,7 @@
     "prettier/prettier": "error",
     "camelcase": "off",
     "no-useless-constructor": "off",
+    "no-async-promise-executor": "off",
     "import-helpers/order-imports": [
       "warn",
       {

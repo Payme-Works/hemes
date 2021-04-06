@@ -5,12 +5,15 @@ import {
   WebSocketEvent,
   WebSocketEventHistory,
   WebSocketEventHandler,
+  BaseWebSocketClient,
+  WaitForOptions,
 } from '../types'
+import sleep from '../utils/sleep'
 
 import { HeartbeatEvent } from './events/Heartbeat'
 import { ProfileEvent } from './events/Profile'
 
-export class WebSocketClient {
+export class WebSocketClient implements BaseWebSocketClient {
   private webSocket: WebSocket
 
   private eventHandlers: WebSocketEventHandler[]
@@ -23,7 +26,7 @@ export class WebSocketClient {
     this.history = []
   }
 
-  public subscribe() {
+  public subscribe(): void {
     this.webSocket = new WebSocket('wss://iqoption.com/echo/websocket')
 
     this.webSocket.on('message', (originEvent: string) => {
@@ -56,12 +59,12 @@ export class WebSocketClient {
     })
   }
 
-  public async send<M = any>(name: string, message: M) {
+  public async send<M = any>(name: string, message: M): Promise<void> {
     try {
       while (this.webSocket.readyState !== 1) {
         console.log('Waiting socket to connect to send message...')
 
-        await new Promise(resolve => setTimeout(resolve, 50))
+        await sleep(50)
       }
 
       const event = {
@@ -78,5 +81,32 @@ export class WebSocketClient {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  public async waitFor<T = any>(
+    event: string,
+    options?: WaitForOptions
+  ): Promise<T | undefined> {
+    return new Promise(async resolve => {
+      let attempts = 0
+
+      while (attempts < (options?.maxAttempts || 10)) {
+        const findEvent = this.history.find(
+          item => item.name === event
+        ) as WebSocketEventHistory<T>
+
+        if (findEvent) {
+          resolve(findEvent.msg)
+
+          return
+        }
+
+        attempts += 1
+
+        await sleep(options?.delay || 500)
+      }
+
+      resolve(undefined)
+    })
   }
 }

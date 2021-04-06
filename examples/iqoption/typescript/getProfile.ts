@@ -15,7 +15,7 @@ async function run() {
 
   const profile = await hemes.getProfile()
 
-  console.log(profile)
+  console.log('Has received profile ->', !!profile)
 }
 
 run()

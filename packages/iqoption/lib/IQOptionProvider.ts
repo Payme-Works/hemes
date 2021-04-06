@@ -5,7 +5,7 @@ import {
   Credentials,
   WebSocketEventHistory,
 } from './types'
-import { Profile, Balance } from './websocket/events/Profile'
+import { Profile } from './websocket/events/Profile'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 export class IQOptionProvider implements BaseIQOptionProvider {
@@ -39,7 +39,7 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     this.api.defaults.headers.Authorization = `SSID ${response.data.ssid}`
 
     if (response.data.code === 'success') {
-      this.webSocket.send('ssid', response.data.ssid)
+      await this.webSocket.send('ssid', response.data.ssid)
     }
 
     return true
@@ -50,20 +50,16 @@ export class IQOptionProvider implements BaseIQOptionProvider {
       event => event.name === 'profile'
     ) as WebSocketEventHistory<Profile>
 
-    this.webSocket.send('sendMessage', {
+    await this.webSocket.send('sendMessage', {
       name: 'get-balances',
       version: '1.0',
     })
 
-    await new Promise(resolve => setTimeout(resolve, 2500))
+    const balances = await this.webSocket.waitFor('balances')
 
-    const balances = await new Promise<Balance[]>(resolve => {
-      const event = this.webSocket.history.find(
-        event => event.name === 'balances'
-      ) as WebSocketEventHistory<Balance[]>
-
-      resolve(event.msg)
-    })
+    if (!balances) {
+      return profileEvent.msg
+    }
 
     return {
       ...profileEvent.msg,
