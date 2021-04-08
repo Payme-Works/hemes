@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
-import { IQOptionAccount } from 'packages/iqoption/lib/IQOptionAccount'
 
+import { IQOptionAccount } from './IQOptionAccount'
 import { BaseIQOptionAccount, BaseIQOptionProvider, Credentials } from './types'
 import { SsidRequest } from './websocket/events/requests/SSID'
 import { WebSocketClient } from './websocket/WebSocketClient'

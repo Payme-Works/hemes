@@ -1,6 +1,8 @@
 import { Hemes } from '@hemes/core'
 import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
 
+import { SsidRequest } from '../lib/websocket/events/requests/SSID'
+
 const mockWebSocketClient = {
   subscribe: jest.fn(),
   send: jest.fn(),
@@ -34,6 +36,9 @@ describe('IQOptionProvider', () => {
     expect(result).toBeTruthy()
 
     expect(mockWebSocketClient.subscribe).toBeCalled()
-    expect(mockWebSocketClient.send).toBeCalledWith('ssid', expect.any(String))
+    expect(mockWebSocketClient.send).toBeCalledWith(
+      SsidRequest,
+      expect.any(String)
+    )
   })
 })
