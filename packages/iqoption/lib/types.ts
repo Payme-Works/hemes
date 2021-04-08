@@ -6,7 +6,10 @@ export interface Credentials {
 }
 
 export interface BaseIQOptionProvider {
-  logIn(credentials: Credentials): Promise<boolean>
+  logIn(credentials: Credentials): Promise<BaseIQOptionAccount>
+}
+
+export interface BaseIQOptionAccount {
   getProfile(): Promise<Profile>
 }
 

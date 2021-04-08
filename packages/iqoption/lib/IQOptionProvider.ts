@@ -1,15 +1,14 @@
 import axios, { AxiosInstance } from 'axios'
+import { IQOptionAccount } from 'packages/iqoption/lib/IQOptionAccount'
 
-import {
-  BaseIQOptionProvider,
-  Credentials,
-  WebSocketEventHistory,
-} from './types'
-import { Profile } from './websocket/events/interfaces/Profile'
-import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
+import { BaseIQOptionAccount, BaseIQOptionProvider, Credentials } from './types'
 import { SsidRequest } from './websocket/events/requests/SSID'
-import { GetBalancesResponse } from './websocket/events/responses/GetBalances'
 import { WebSocketClient } from './websocket/WebSocketClient'
+
+interface LoginResponse {
+  code: string
+  ssid: string
+}
 
 export class IQOptionProvider implements BaseIQOptionProvider {
   private api: AxiosInstance
@@ -23,7 +22,10 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     this.webSocket = new WebSocketClient()
   }
 
-  public async logIn({ email, password }: Credentials): Promise<boolean> {
+  public async logIn({
+    email,
+    password,
+  }: Credentials): Promise<BaseIQOptionAccount> {
     console.log('Credentials ->', { email, password })
 
     this.webSocket.subscribe()
@@ -32,7 +34,7 @@ export class IQOptionProvider implements BaseIQOptionProvider {
       baseURL: 'https://auth.iqoption.com/api/v2',
     })
 
-    const response = await authApi.post('/login', {
+    const response = await authApi.post<LoginResponse>('/login', {
       identifier: email,
       password,
     })
@@ -41,31 +43,14 @@ export class IQOptionProvider implements BaseIQOptionProvider {
 
     this.api.defaults.headers.Authorization = `SSID ${response.data.ssid}`
 
-    if (response.data.code === 'success') {
-      await this.webSocket.send(SsidRequest, response.data.ssid)
+    if (response.data.code !== 'success') {
+      throw new Error('Login failed')
     }
 
-    return true
-  }
+    await this.webSocket.send(SsidRequest, response.data.ssid)
 
-  public async getProfile(): Promise<Profile> {
-    const profileEvent = this.webSocket.history.find(
-      event => event.name === 'profile'
-    ) as WebSocketEventHistory<Profile>
+    const account = new IQOptionAccount(this.api, this.webSocket)
 
-    const request = await this.webSocket.send(GetBalancesRequest)
-
-    const balancesEvent = await this.webSocket.waitFor(GetBalancesResponse, {
-      requestId: request.request_id,
-    })
-
-    if (!balancesEvent) {
-      return profileEvent.msg
-    }
-
-    return {
-      ...profileEvent.msg,
-      balances: balancesEvent.msg,
-    }
+    return account
   }
 }

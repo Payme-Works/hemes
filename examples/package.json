@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "prestart": "cd .. && yarn --force && yarn build && cd examples && yarn --force",
+    "update": "cd .. && yarn --force && yarn build && cd examples && yarn --force",
+    "prestart": "yarn update",
     "start": "yarn ts-node"
   },
   "dependencies": {
