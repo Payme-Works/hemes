@@ -1,6 +1,3 @@
-import { WebSocketEvent } from '../../types'
-import { BaseEventHandler } from '../BaseEventHandler'
-
 export interface Balance {
   id: number
   user_id: number
@@ -121,16 +118,4 @@ export interface Profile {
   user_group: string
   user_id: number
   welcome_splash: number
-}
-
-export class ProfileEvent extends BaseEventHandler<Profile> {
-  public profile: Profile
-
-  public get name(): string {
-    return 'profile'
-  }
-
-  public handle(event: WebSocketEvent<Profile>): void {
-    this.profile = event.msg
-  }
 }

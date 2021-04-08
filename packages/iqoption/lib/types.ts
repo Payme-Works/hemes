@@ -1,5 +1,4 @@
-import { Profile } from './websocket/events/Profile'
-import { WebSocketClient } from './websocket/WebSocketClient'
+import { Profile } from './websocket/events/interfaces/Profile'
 
 export interface Credentials {
   email: string
@@ -11,35 +10,65 @@ export interface BaseIQOptionProvider {
   getProfile(): Promise<Profile>
 }
 
+export interface WebSocketEvent<Message = any> {
+  request_id?: string
+  name: string
+  msg: Message
+  status?: number
+  microserviceName?: string
+}
+
+export interface WebSocketEventHistory<Message = any>
+  extends WebSocketEvent<Message> {
+  at: number
+}
+
 export interface WaitForOptions {
+  requestId?: string
   maxAttempts?: number
   delay?: number
 }
+
+export type OptionalSpread<Arg = undefined> = Arg extends undefined ? [] : [Arg]
 
 export interface BaseWebSocketClient {
   history: WebSocketEventHistory[]
 
   subscribe(): void
-  send<M = any>(name: string, message: M): Promise<void>
-  waitFor<T = any>(
-    event: string,
+
+  send<Message, Args = undefined>(
+    Request: EventRequestNew<Message, Args>,
+    ...args: OptionalSpread<Args>
+  ): Promise<WebSocketEvent<Message>>
+  waitFor<Message>(
+    Response: EventResponseNew<Message>,
     options?: WaitForOptions
-  ): Promise<T | undefined>
+  ): Promise<WebSocketEventHistory<Message> | undefined>
 }
 
-export interface WebSocketEvent<T = any> {
-  name: string
-  msg: T
-}
+export type EventRequestNew<Message, Args> = new () => BaseEventRequest<
+  Message,
+  Args
+>
 
-export interface WebSocketEventHistory<T = any> extends WebSocketEvent<T> {
-  at: number
-}
+export type EventResponseNew<Message> = new () => BaseEventResponse<Message>
 
-export interface WebSocketEventHandler<T = any> {
-  webSocket: WebSocketClient
-
+export interface BaseEventRequest<Message = any, Args = undefined> {
   name: string
 
-  handle(event: WebSocketEvent<T>): void
+  build(...args: OptionalSpread<Args>): Promise<Message>
+}
+
+export interface BaseEventResponse<Message = any> {
+  name: string
+
+  test(event: WebSocketEvent<Message>): Promise<boolean>
+}
+
+export interface BaseEventSubscriber<Message = any> {
+  webSocket: BaseWebSocketClient
+
+  name: string
+
+  update(event: WebSocketEvent<Message>): void
 }

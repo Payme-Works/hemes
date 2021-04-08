@@ -4,24 +4,26 @@ import WebSocket from 'ws'
 import {
   WebSocketEvent,
   WebSocketEventHistory,
-  WebSocketEventHandler,
+  BaseEventSubscriber,
   BaseWebSocketClient,
   WaitForOptions,
+  EventRequestNew,
+  OptionalSpread,
+  EventResponseNew,
 } from '../types'
 import sleep from '../utils/sleep'
 
-import { HeartbeatEvent } from './events/Heartbeat'
-import { ProfileEvent } from './events/Profile'
+import { HeartbeatSubscriber } from './events/subscribers/Heartbeat'
 
 export class WebSocketClient implements BaseWebSocketClient {
   private webSocket: WebSocket
 
-  private eventHandlers: WebSocketEventHandler[]
+  private subscribers: BaseEventSubscriber[]
 
   public history: WebSocketEventHistory[]
 
   constructor() {
-    this.eventHandlers = [new HeartbeatEvent(this), new ProfileEvent(this)]
+    this.subscribers = [new HeartbeatSubscriber(this)]
 
     this.history = []
   }
@@ -41,12 +43,12 @@ export class WebSocketClient implements BaseWebSocketClient {
         console.log('⬇ ', event)
       }
 
-      const eventHandler = this.eventHandlers.find(
+      const eventHandler = this.subscribers.find(
         eventHandler => eventHandler.name === event.name
       )
 
       if (eventHandler) {
-        eventHandler.handle(event)
+        eventHandler.update(event)
       }
     })
 
@@ -59,44 +61,71 @@ export class WebSocketClient implements BaseWebSocketClient {
     })
   }
 
-  public async send<M = any>(name: string, message: M): Promise<void> {
+  public async send<Message, Args = undefined>(
+    Request: EventRequestNew<Message, Args>,
+    ...args: OptionalSpread<Args>
+  ): Promise<WebSocketEvent<Message>> {
+    const request = new Request()
+
+    while (this.webSocket.readyState !== 1) {
+      console.log('Waiting socket to connect to send message...')
+
+      await sleep(50)
+    }
+
+    const message = await request.build(...args)
+
+    const event: WebSocketEvent<Message> = {
+      name: request.name,
+      msg: message,
+      request_id: md5(String(Math.random())),
+    }
+
     try {
-      while (this.webSocket.readyState !== 1) {
-        console.log('Waiting socket to connect to send message...')
-
-        await sleep(50)
-      }
-
-      const event = {
-        name,
-        msg: message,
-        request_id: md5(String(Math.random())),
-      }
-
       this.webSocket.send(JSON.stringify(event))
 
       if (!['heartbeat', 'timeSync'].includes(event.name)) {
         console.log('⬆ ', event)
       }
-    } catch (error) {
-      console.error(error)
+    } catch (err) {
+      console.error(err)
+
+      throw err
     }
+
+    return event
   }
 
-  public async waitFor<T = any>(
-    event: string,
+  public async waitFor<Message>(
+    Response: EventResponseNew<Message>,
     options?: WaitForOptions
-  ): Promise<T | undefined> {
+  ): Promise<WebSocketEventHistory<Message> | undefined> {
+    const response = new Response()
+
     return new Promise(async resolve => {
       let attempts = 0
 
       while (attempts < (options?.maxAttempts || 10)) {
-        const findEvent = this.history.find(
-          item => item.name === event
-        ) as WebSocketEventHistory<T>
+        const findEvent = this.history.find(event => {
+          let result = true
+
+          if (options?.requestId) {
+            result = options?.requestId === event.request_id
+          }
+
+          return event.name === response.name && result
+        }) as WebSocketEventHistory<Message>
 
         if (findEvent) {
-          resolve(findEvent.msg)
+          const testPassed = response.test(findEvent)
+
+          if (!testPassed) {
+            resolve(undefined)
+
+            return
+          }
+
+          resolve(findEvent)
 
           return
         }
