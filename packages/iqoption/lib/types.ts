@@ -1,4 +1,5 @@
-import { Profile } from './websocket/events/interfaces/Profile'
+import { InitializationData } from './websocket/events/responses/GetInitializationData'
+import { Profile } from './websocket/events/responses/Profile'
 
 export interface Credentials {
   email: string
@@ -10,6 +11,7 @@ export interface BaseIQOptionProvider {
 }
 
 export interface BaseIQOptionAccount {
+  getInitializationData(): Promise<InitializationData>
   getProfile(): Promise<Profile>
 }
 
@@ -40,21 +42,23 @@ export interface BaseWebSocketClient {
   subscribe(): void
 
   send<Message, Args = undefined>(
-    Request: EventRequestNew<Message, Args>,
+    Request: EventRequestConstructor<Message, Args>,
     ...args: OptionalSpread<Args>
   ): Promise<WebSocketEvent<Message>>
   waitFor<Message>(
-    Response: EventResponseNew<Message>,
+    Response: EventResponseConstructor<Message>,
     options?: WaitForOptions
   ): Promise<WebSocketEventHistory<Message> | undefined>
 }
 
-export type EventRequestNew<Message, Args> = new () => BaseEventRequest<
+export type EventRequestConstructor<Message, Args> = new () => BaseEventRequest<
   Message,
   Args
 >
 
-export type EventResponseNew<Message> = new () => BaseEventResponse<Message>
+export type EventResponseConstructor<
+  Message
+> = new () => BaseEventResponse<Message>
 
 export interface BaseEventRequest<Message = any, Args = undefined> {
   name: string

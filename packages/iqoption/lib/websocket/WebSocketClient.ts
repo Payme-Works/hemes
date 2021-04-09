@@ -9,9 +9,9 @@ import {
   BaseEventSubscriber,
   BaseWebSocketClient,
   WaitForOptions,
-  EventRequestNew,
+  EventRequestConstructor,
   OptionalSpread,
-  EventResponseNew,
+  EventResponseConstructor,
 } from '../types'
 
 import { HeartbeatSubscriber } from './events/subscribers/Heartbeat'
@@ -63,7 +63,7 @@ export class WebSocketClient implements BaseWebSocketClient {
   }
 
   public async send<Message, Args = undefined>(
-    Request: EventRequestNew<Message, Args>,
+    Request: EventRequestConstructor<Message, Args>,
     ...args: OptionalSpread<Args>
   ): Promise<WebSocketEvent<Message>> {
     const request = new Request()
@@ -98,7 +98,7 @@ export class WebSocketClient implements BaseWebSocketClient {
   }
 
   public async waitFor<Message>(
-    Response: EventResponseNew<Message>,
+    Response: EventResponseConstructor<Message>,
     options?: WaitForOptions
   ): Promise<WebSocketEventHistory<Message> | undefined> {
     const response = new Response()
