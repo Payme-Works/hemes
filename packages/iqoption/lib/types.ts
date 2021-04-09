@@ -1,18 +1,20 @@
 import { InitializationData } from './websocket/events/responses/GetInitializationData'
+import { UnderlyingList } from './websocket/events/responses/GetUnderlyingList'
 import { Profile } from './websocket/events/responses/Profile'
 
-export interface Credentials {
+export interface LogInCredentials {
   email: string
   password: string
 }
 
 export interface BaseIQOptionProvider {
-  logIn(credentials: Credentials): Promise<BaseIQOptionAccount>
+  logIn(credentials: LogInCredentials): Promise<BaseIQOptionAccount>
 }
 
 export interface BaseIQOptionAccount {
   getInitializationData(): Promise<InitializationData>
   getProfile(): Promise<Profile>
+  getUnderlyingList(): Promise<UnderlyingList>
 }
 
 export interface WebSocketEvent<Message = any> {

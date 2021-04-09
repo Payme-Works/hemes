@@ -9,6 +9,7 @@ needs.
 | Log in                  | [JavaScript](./logIn.js) - [TypeScript](./typescript/logIn.tsx)                                 |
 | Get initialization data | [JavaScript](./getInitializationData.js) - [TypeScript](./typescript/getInitializationData.tsx) |
 | Get profile             | [JavaScript](./getProfile.js) - [TypeScript](./typescript/getProfile.tsx)                       |
+| Get underlying list     | [JavaScript](./getUnderlyingList.js) - [TypeScript](./typescript/getUnderlyingList.tsx)         |
 
 ## Add an example
 

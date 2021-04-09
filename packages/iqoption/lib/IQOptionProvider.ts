@@ -1,7 +1,11 @@
 import axios, { AxiosInstance } from 'axios'
 
 import { IQOptionAccount } from './IQOptionAccount'
-import { BaseIQOptionAccount, BaseIQOptionProvider, Credentials } from './types'
+import {
+  BaseIQOptionAccount,
+  BaseIQOptionProvider,
+  LogInCredentials,
+} from './types'
 import { SsidRequest } from './websocket/events/requests/SSID'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
@@ -25,7 +29,7 @@ export class IQOptionProvider implements BaseIQOptionProvider {
   public async logIn({
     email,
     password,
-  }: Credentials): Promise<BaseIQOptionAccount> {
+  }: LogInCredentials): Promise<BaseIQOptionAccount> {
     console.log('Credentials ->', { email, password })
 
     this.webSocket.subscribe()

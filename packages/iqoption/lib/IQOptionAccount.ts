@@ -3,11 +3,13 @@ import { AxiosInstance } from 'axios'
 import { BaseIQOptionAccount } from './types'
 import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
 import { GetInitializationDataRequest } from './websocket/events/requests/GetInitializationData'
+import { GetUnderlyingListRequest } from './websocket/events/requests/GetUnderlyingList'
 import { GetBalancesResponse } from './websocket/events/responses/GetBalances'
 import {
   GetInitializationDataResponse,
   InitializationData,
 } from './websocket/events/responses/GetInitializationData'
+import { GetUnderlyingListResponse } from './websocket/events/responses/GetUnderlyingList'
 import { Profile, ProfileResponse } from './websocket/events/responses/Profile'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
@@ -54,5 +56,24 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       ...profileEvent.msg,
       balances: balancesResponse.msg,
     }
+  }
+
+  public async getUnderlyingList(): Promise<any> {
+    const request = await this.webSocket.send(GetUnderlyingListRequest, {
+      type: 'digital-option',
+    })
+
+    const underlyingListResponse = await this.webSocket.waitFor(
+      GetUnderlyingListResponse,
+      {
+        requestId: request.request_id,
+      }
+    )
+
+    if (!underlyingListResponse) {
+      throw new Error('Underlying list event not found')
+    }
+
+    return underlyingListResponse.msg
   }
 }
