@@ -1,0 +1,19 @@
+{
+  "name": "@hemes/example",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "update": "cd .. && yarn --force && yarn build && cd examples && yarn --force",
+    "prestart": "yarn update",
+    "start": "yarn ts-node"
+  },
+  "dependencies": {
+    "@hemes/core": "../packages/core",
+    "@hemes/iqoption": "../packages/iqoption",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
+  }
+}

@@ -1,13 +1,13 @@
-import { ProviderConstructor, BaseHemes, Provider } from './types'
+import { BaseHemes, ClassPrototype, ProviderConstructor } from './types'
 
-export class Hemes<PC extends ProviderConstructor> implements BaseHemes {
-  private HemesProvider: PC
+export class Hemes<T extends ClassPrototype> implements BaseHemes<T> {
+  private provider: any
 
-  constructor(provider: PC) {
-    this.HemesProvider = provider
+  constructor(HemesProvider: T & ProviderConstructor<T>) {
+    this.provider = new HemesProvider(this)
   }
 
-  getProvider(): Provider {
-    return new this.HemesProvider(this)
+  public getProvider<P = T['prototype']>(): P {
+    return this.provider
   }
 }

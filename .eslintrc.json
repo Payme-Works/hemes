@@ -18,8 +18,19 @@
     "prettier",
     "import-helpers"
   ],
+  "overrides": [
+    {
+      "files": ["**/types.ts"],
+      "rules": {
+        "no-use-before-define": "off"
+      }
+    }
+  ],
   "rules": {
     "prettier/prettier": "error",
+    "camelcase": "off",
+    "no-useless-constructor": "off",
+    "no-async-promise-executor": "off",
     "import-helpers/order-imports": [
       "warn",
       {
@@ -27,7 +38,8 @@
         "groups": [
           ["module", "absolute"],
           "/^@/",
-          ["parent", "sibling", "index"]
+          ["parent", "index"],
+          "sibling"
         ],
         "alphabetize": { "order": "asc", "ignoreCase": true }
       }

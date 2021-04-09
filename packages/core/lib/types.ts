@@ -1,16 +1,11 @@
-export interface Credentials {
-  email: string
-  password: string
+export interface ClassPrototype {
+  prototype: any
 }
 
-export interface Provider {
-  signIn(credentials: Credentials): Promise<void>
+export interface BaseHemes<T extends ClassPrototype> {
+  getProvider<P = T['prototype']>(): P
 }
 
-export interface BaseHemes {
-  getProvider(): Provider
-}
-
-export interface ProviderConstructor {
-  new (hemes: BaseHemes)
+export interface ProviderConstructor<T extends ClassPrototype> {
+  new (hemes: BaseHemes<T>)
 }
