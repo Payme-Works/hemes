@@ -1,6 +1,8 @@
 import md5 from 'md5'
 import WebSocket from 'ws'
 
+import { sleep } from '@hemes/core'
+
 import {
   WebSocketEvent,
   WebSocketEventHistory,
@@ -11,7 +13,6 @@ import {
   OptionalSpread,
   EventResponseNew,
 } from '../types'
-import sleep from '../utils/sleep'
 
 import { HeartbeatSubscriber } from './events/subscribers/Heartbeat'
 
