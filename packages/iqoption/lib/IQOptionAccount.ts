@@ -22,9 +22,7 @@ import { Profile, ProfileResponse } from './websocket/events/responses/Profile'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 export class IQOptionAccount implements BaseIQOptionAccount {
-  constructor(private api: AxiosInstance, private webSocket: WebSocketClient) {
-    console.log('API -> ', !!this.api)
-  }
+  constructor(public api: AxiosInstance, public webSocket: WebSocketClient) {}
 
   public async getProfile(): Promise<Profile> {
     const profileEvent = await this.webSocket.waitFor(ProfileResponse)
