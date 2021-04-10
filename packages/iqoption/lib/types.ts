@@ -1,4 +1,5 @@
 import { InitializationData } from './websocket/events/responses/GetInitializationData'
+import { Instruments } from './websocket/events/responses/GetInstruments'
 import { UnderlyingList } from './websocket/events/responses/GetUnderlyingList'
 import { Profile } from './websocket/events/responses/Profile'
 
@@ -24,10 +25,10 @@ export interface BaseIQOptionProvider {
 }
 
 export interface BaseIQOptionAccount {
-  getInitializationData(): Promise<InitializationData>
   getProfile(): Promise<Profile>
+  getInitializationData(): Promise<InitializationData>
   getUnderlyingList(data: GetUnderlyingList): Promise<UnderlyingList>
-  getInstruments(data: GetInstruments): Promise<any>
+  getInstruments(data: GetInstruments): Promise<Instruments>
 }
 
 export interface WebSocketEvent<Message = any> {

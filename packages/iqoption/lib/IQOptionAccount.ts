@@ -10,31 +10,20 @@ import {
   GetInitializationDataResponse,
   InitializationData,
 } from './websocket/events/responses/GetInitializationData'
-import { GetInstrumentsResponse } from './websocket/events/responses/GetInstruments'
-import { GetUnderlyingListResponse } from './websocket/events/responses/GetUnderlyingList'
+import {
+  GetInstrumentsResponse,
+  Instruments,
+} from './websocket/events/responses/GetInstruments'
+import {
+  GetUnderlyingListResponse,
+  UnderlyingList,
+} from './websocket/events/responses/GetUnderlyingList'
 import { Profile, ProfileResponse } from './websocket/events/responses/Profile'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 export class IQOptionAccount implements BaseIQOptionAccount {
   constructor(private api: AxiosInstance, private webSocket: WebSocketClient) {
     console.log('API -> ', !!this.api)
-  }
-
-  public async getInitializationData(): Promise<InitializationData> {
-    const request = await this.webSocket.send(GetInitializationDataRequest)
-
-    const initializationDataResponse = await this.webSocket.waitFor(
-      GetInitializationDataResponse,
-      {
-        requestId: request.request_id,
-      }
-    )
-
-    if (!initializationDataResponse) {
-      throw new Error('Initialization data event not found')
-    }
-
-    return initializationDataResponse.msg
   }
 
   public async getProfile(): Promise<Profile> {
@@ -60,7 +49,26 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     }
   }
 
-  public async getUnderlyingList({ type }: GetUnderlyingList): Promise<any> {
+  public async getInitializationData(): Promise<InitializationData> {
+    const request = await this.webSocket.send(GetInitializationDataRequest)
+
+    const initializationDataResponse = await this.webSocket.waitFor(
+      GetInitializationDataResponse,
+      {
+        requestId: request.request_id,
+      }
+    )
+
+    if (!initializationDataResponse) {
+      throw new Error('Initialization data event not found')
+    }
+
+    return initializationDataResponse.msg
+  }
+
+  public async getUnderlyingList({
+    type,
+  }: GetUnderlyingList): Promise<UnderlyingList> {
     const request = await this.webSocket.send(GetUnderlyingListRequest, {
       type,
     })
@@ -79,7 +87,7 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     return underlyingListResponse.msg
   }
 
-  public async getInstruments({ type }: GetInstruments): Promise<any> {
+  public async getInstruments({ type }: GetInstruments): Promise<Instruments> {
     const request = await this.webSocket.send(GetInstrumentsRequest, {
       type,
     })
