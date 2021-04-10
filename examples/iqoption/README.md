@@ -10,6 +10,7 @@ needs.
 | Get initialization data | [JavaScript](./getInitializationData.js) - [TypeScript](./typescript/getInitializationData.tsx) |
 | Get profile             | [JavaScript](./getProfile.js) - [TypeScript](./typescript/getProfile.tsx)                       |
 | Get underlying list     | [JavaScript](./getUnderlyingList.js) - [TypeScript](./typescript/getUnderlyingList.tsx)         |
+| Get instruments         | [JavaScript](./getInstruments.js) - [TypeScript](./typescript/getInstruments.tsx)               |
 
 ## Add an example
 

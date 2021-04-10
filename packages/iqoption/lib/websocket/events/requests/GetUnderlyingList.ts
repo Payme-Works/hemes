@@ -1,14 +1,13 @@
+import { UnderlyingListType } from '../../../types'
 import { Request } from '../Request'
 
 interface GetUnderlyingListRequestMessage {
   name: 'get-underlying-list'
   version: '2.0'
   body: {
-    type: 'digital-option'
+    type: UnderlyingListType
   }
 }
-
-type UnderlyingListType = 'digital-option'
 
 interface GetUnderlyingListRequestArgs {
   type: UnderlyingListType

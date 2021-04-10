@@ -1,14 +1,16 @@
 import { AxiosInstance } from 'axios'
 
-import { BaseIQOptionAccount } from './types'
+import { BaseIQOptionAccount, GetInstruments, GetUnderlyingList } from './types'
 import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
 import { GetInitializationDataRequest } from './websocket/events/requests/GetInitializationData'
+import { GetInstrumentsRequest } from './websocket/events/requests/GetInstruments'
 import { GetUnderlyingListRequest } from './websocket/events/requests/GetUnderlyingList'
 import { GetBalancesResponse } from './websocket/events/responses/GetBalances'
 import {
   GetInitializationDataResponse,
   InitializationData,
 } from './websocket/events/responses/GetInitializationData'
+import { GetInstrumentsResponse } from './websocket/events/responses/GetInstruments'
 import { GetUnderlyingListResponse } from './websocket/events/responses/GetUnderlyingList'
 import { Profile, ProfileResponse } from './websocket/events/responses/Profile'
 import { WebSocketClient } from './websocket/WebSocketClient'
@@ -58,9 +60,9 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     }
   }
 
-  public async getUnderlyingList(): Promise<any> {
+  public async getUnderlyingList({ type }: GetUnderlyingList): Promise<any> {
     const request = await this.webSocket.send(GetUnderlyingListRequest, {
-      type: 'digital-option',
+      type,
     })
 
     const underlyingListResponse = await this.webSocket.waitFor(
@@ -75,5 +77,24 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     }
 
     return underlyingListResponse.msg
+  }
+
+  public async getInstruments({ type }: GetInstruments): Promise<any> {
+    const request = await this.webSocket.send(GetInstrumentsRequest, {
+      type,
+    })
+
+    const instrumentsResponse = await this.webSocket.waitFor(
+      GetInstrumentsResponse,
+      {
+        requestId: request.request_id,
+      }
+    )
+
+    if (!instrumentsResponse) {
+      throw new Error('Instruments event not found')
+    }
+
+    return instrumentsResponse.msg
   }
 }

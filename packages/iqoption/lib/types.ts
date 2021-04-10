@@ -7,6 +7,18 @@ export interface LogInCredentials {
   password: string
 }
 
+export type UnderlyingListType = 'digital-option'
+
+export interface GetUnderlyingList {
+  type: UnderlyingListType
+}
+
+export type InstrumentType = 'cfd' | 'forex' | 'crypto'
+
+export interface GetInstruments {
+  type: InstrumentType
+}
+
 export interface BaseIQOptionProvider {
   logIn(credentials: LogInCredentials): Promise<BaseIQOptionAccount>
 }
@@ -14,7 +26,8 @@ export interface BaseIQOptionProvider {
 export interface BaseIQOptionAccount {
   getInitializationData(): Promise<InitializationData>
   getProfile(): Promise<Profile>
-  getUnderlyingList(): Promise<UnderlyingList>
+  getUnderlyingList(data: GetUnderlyingList): Promise<UnderlyingList>
+  getInstruments(data: GetInstruments): Promise<any>
 }
 
 export interface WebSocketEvent<Message = any> {

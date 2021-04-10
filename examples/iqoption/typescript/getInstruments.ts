@@ -13,11 +13,9 @@ async function run() {
 
   await sleep(5000)
 
-  const underlyingList = await account.getUnderlyingList({
-    type: 'digital-option',
-  })
+  const instruments = await account.getInstruments({ type: 'crypto' })
 
-  console.log(JSON.stringify(underlyingList))
+  console.log(JSON.stringify(instruments))
 }
 
 run()

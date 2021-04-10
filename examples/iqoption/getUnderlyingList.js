@@ -13,7 +13,9 @@ async function run() {
 
   await sleep(5000)
 
-  const underlyingList = await account.getUnderlyingList()
+  const underlyingList = await account.getUnderlyingList({
+    type: 'digital-option',
+  })
 
   console.log(JSON.stringify(underlyingList))
 }
