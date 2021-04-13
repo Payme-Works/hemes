@@ -13,9 +13,9 @@ async function run() {
 
   await sleep(5000)
 
-  const instruments = await account.getInstruments({ type: 'crypto' })
+  const profit = await account.getActiveProfit('EURUSD', 'binary-option', 'm1')
 
-  console.log(JSON.stringify(instruments))
+  console.log(profit)
 }
 
 run()

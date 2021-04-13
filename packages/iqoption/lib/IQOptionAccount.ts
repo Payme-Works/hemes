@@ -1,23 +1,18 @@
 import { AxiosInstance } from 'axios'
 
-import { BaseIQOptionAccount, GetInstruments, GetUnderlyingList } from './types'
+import {
+  Active,
+  BaseIQOptionAccount,
+  ExpirationPeriod,
+  InstrumentType,
+} from './types'
+import { getActiveId } from './utils/getActiveId'
 import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
 import { GetInitializationDataRequest } from './websocket/events/requests/GetInitializationData'
-import { GetInstrumentsRequest } from './websocket/events/requests/GetInstruments'
-import { GetUnderlyingListRequest } from './websocket/events/requests/GetUnderlyingList'
+import { GetTopAssetsRequest } from './websocket/events/requests/GetTopAssets'
 import { GetBalancesResponse } from './websocket/events/responses/GetBalances'
-import {
-  GetInitializationDataResponse,
-  InitializationData,
-} from './websocket/events/responses/GetInitializationData'
-import {
-  GetInstrumentsResponse,
-  Instruments,
-} from './websocket/events/responses/GetInstruments'
-import {
-  GetUnderlyingListResponse,
-  UnderlyingList,
-} from './websocket/events/responses/GetUnderlyingList'
+import { GetInitializationDataResponse } from './websocket/events/responses/GetInitializationData'
+import { GetTopAssetsResponse } from './websocket/events/responses/GetTopAssets'
 import { Profile, ProfileResponse } from './websocket/events/responses/Profile'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
@@ -47,60 +42,55 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     }
   }
 
-  public async getInitializationData(): Promise<InitializationData> {
-    const request = await this.webSocket.send(GetInitializationDataRequest)
+  public async getActiveProfit<Type extends InstrumentType>(
+    active: Active,
+    instrumentType: Type,
+    ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
+  ): Promise<number> {
+    const activeId = getActiveId(active)
 
-    const initializationDataResponse = await this.webSocket.waitFor(
-      GetInitializationDataResponse,
-      {
-        requestId: request.request_id,
+    if (instrumentType === 'binary-option') {
+      let instrument: 'binary' | 'turbo' = 'binary'
+
+      if (expirationPeriod[0] === 'm1') {
+        instrument = 'turbo'
       }
-    )
 
-    if (!initializationDataResponse) {
-      throw new Error('Initialization data event not found')
+      await this.webSocket.send(GetInitializationDataRequest)
+
+      const initializationData = await this.webSocket.waitFor(
+        GetInitializationDataResponse
+      )
+
+      const activeInfo = initializationData?.msg[instrument].actives[activeId]
+
+      if (!activeInfo) {
+        throw new Error('Active info not found')
+      }
+
+      const commission = activeInfo.option.profit.commission
+
+      return 100 - commission
     }
 
-    return initializationDataResponse.msg
-  }
-
-  public async getUnderlyingList({
-    type,
-  }: GetUnderlyingList): Promise<UnderlyingList> {
-    const request = await this.webSocket.send(GetUnderlyingListRequest, {
-      type,
+    await this.webSocket.send(GetTopAssetsRequest, {
+      instrument_type: instrumentType,
     })
 
-    const underlyingListResponse = await this.webSocket.waitFor(
-      GetUnderlyingListResponse,
-      {
-        requestId: request.request_id,
-      }
-    )
+    const topAssets = await this.webSocket.waitFor(GetTopAssetsResponse)
 
-    if (!underlyingListResponse) {
-      throw new Error('Underlying list event not found')
+    if (!topAssets) {
+      throw new Error('Top assets not found')
     }
 
-    return underlyingListResponse.msg
-  }
-
-  public async getInstruments({ type }: GetInstruments): Promise<Instruments> {
-    const request = await this.webSocket.send(GetInstrumentsRequest, {
-      type,
-    })
-
-    const instrumentsResponse = await this.webSocket.waitFor(
-      GetInstrumentsResponse,
-      {
-        requestId: request.request_id,
-      }
+    const findAsset = topAssets.msg.data.find(
+      asset => asset.active_id === activeId
     )
 
-    if (!instrumentsResponse) {
-      throw new Error('Instruments event not found')
+    if (!findAsset) {
+      throw new Error('Active asset not found')
     }
 
-    return instrumentsResponse.msg
+    return findAsset.spot_profit.value
   }
 }

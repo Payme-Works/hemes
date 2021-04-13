@@ -1,16 +1,16 @@
-import { UnderlyingListType } from '../../../types'
+import { UnderlyingType } from '../../../types'
 import { Request } from '../Request'
 
 interface GetUnderlyingListRequestMessage {
   name: 'get-underlying-list'
   version: '2.0'
   body: {
-    type: UnderlyingListType
+    type: UnderlyingType
   }
 }
 
 interface GetUnderlyingListRequestArgs {
-  type: UnderlyingListType
+  type: UnderlyingType
 }
 
 export class GetUnderlyingListRequest extends Request<

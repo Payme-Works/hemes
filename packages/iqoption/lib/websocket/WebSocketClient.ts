@@ -10,8 +10,8 @@ import {
   BaseWebSocketClient,
   WaitForOptions,
   EventRequestConstructor,
-  OptionalSpread,
   EventResponseConstructor,
+  CheckForUnion,
 } from '../types'
 
 import { HeartbeatSubscriber } from './events/subscribers/Heartbeat'
@@ -64,7 +64,7 @@ export class WebSocketClient implements BaseWebSocketClient {
 
   public async send<Message, Args = undefined>(
     Request: EventRequestConstructor<Message, Args>,
-    ...args: OptionalSpread<Args>
+    args?: CheckForUnion<Args, never, Args>
   ): Promise<WebSocketEvent<Message>> {
     const request = new Request()
 
@@ -74,7 +74,7 @@ export class WebSocketClient implements BaseWebSocketClient {
       await sleep(50)
     }
 
-    const message = await request.build(...args)
+    const message = await request.build(args as any)
 
     const event: WebSocketEvent<Message> = {
       name: request.name,

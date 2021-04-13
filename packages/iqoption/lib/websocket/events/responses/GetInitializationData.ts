@@ -1,6 +1,6 @@
 import { Response } from '../Response'
 
-export interface Active {
+export interface ActiveInfo {
   name: string
   group_id: number
   image: string
@@ -52,13 +52,13 @@ export interface Active {
 export interface InitializationData {
   binary: {
     actives: {
-      [key: string]: Active
+      [key: string]: ActiveInfo
     }
     list: any[]
   }
   turbo: {
     actives: {
-      [key: string]: Active
+      [key: string]: ActiveInfo
     }
     list: any[]
   }

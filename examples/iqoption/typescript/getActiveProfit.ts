@@ -13,9 +13,9 @@ async function run() {
 
   await sleep(5000)
 
-  const initializationData = await account.getInitializationData()
+  const profit = await account.getActiveProfit('EURUSD', 'binary-option', 'm1')
 
-  console.log(JSON.stringify(initializationData))
+  console.log(profit)
 }
 
 run()
