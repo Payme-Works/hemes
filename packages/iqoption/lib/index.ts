@@ -4,14 +4,16 @@
 export * from './IQOptionProvider'
 
 /**
- * Utils
- */
-export * from './utils'
-
-/**
  * WebSocket
  */
 export * from './websocket'
+
+/**
+ * Utils
+ */
+export * from './utils/getActiveId'
+
+export * from './utils/getExpirationPeriodTime'
 
 /**
  * Types

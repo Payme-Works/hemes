@@ -28,12 +28,12 @@ describe('IQOptionProvider', () => {
   })
 
   it('should be able to log in with correct credentials', async () => {
-    const result = await hemes.logIn({
+    const account = await hemes.logIn({
       email: String(process.env.TEST_IQOPTION_ACCOUNT_EMAIL),
       password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
     })
 
-    expect(result).toBeTruthy()
+    expect(account).toBeTruthy()
 
     expect(mockWebSocketClient.subscribe).toBeCalled()
     expect(mockWebSocketClient.send).toBeCalledWith(

@@ -1,7 +1,6 @@
-import { getExpirationPeriodTime } from 'packages/iqoption/lib/utils/getExpirationPeriodTime'
-
 import { Active, ExpirationPeriod, InstrumentType } from '../../../types'
 import { getActiveId } from '../../../utils/getActiveId'
+import { getExpirationPeriodTime } from '../../../utils/getExpirationPeriodTime'
 import { Request } from '../Request'
 
 interface UnsubscribeInstrumentQuotesGeneratedMessage {
