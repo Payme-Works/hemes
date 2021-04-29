@@ -13,9 +13,13 @@ async function run() {
 
   await sleep(5000)
 
-  const profit = await account.getActiveProfit('EURUSD', 'digital-option')
+  const isEnabled = await account.isActiveEnabled(
+    'EURUSD',
+    'binary-option',
+    'm1'
+  )
 
-  console.log(profit)
+  console.log(isEnabled)
 }
 
 run()

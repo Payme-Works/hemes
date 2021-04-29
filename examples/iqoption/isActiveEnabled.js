@@ -1,10 +1,10 @@
 import '../../loadEnv'
 
 import { Hemes, sleep } from '@hemes/core'
-import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
+import { IQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
-  const hemes = new Hemes(IQOptionProvider).getProvider<BaseIQOptionProvider>()
+  const hemes = new Hemes(IQOptionProvider).getProvider()
 
   const account = await hemes.logIn({
     email: String(process.env.TEST_IQOPTION_ACCOUNT_EMAIL),
@@ -13,9 +13,13 @@ async function run() {
 
   await sleep(5000)
 
-  const profit = await account.getActiveProfit('EURUSD', 'digital-option')
+  const isEnabled = await account.isActiveEnabled(
+    'EURUSD',
+    'binary-option',
+    'm1'
+  )
 
-  console.log(profit)
+  console.log(isEnabled)
 }
 
 run()

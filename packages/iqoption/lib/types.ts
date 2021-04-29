@@ -22,6 +22,11 @@ export interface BaseIQOptionAccount {
     instrumentType: Type,
     ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
   ): Promise<number>
+  isActiveEnabled<Type extends InstrumentType>(
+    active: Active,
+    instrumentType: Type,
+    ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
+  ): Promise<boolean>
 }
 
 export interface WebSocketEvent<Message = any> {
