@@ -41,7 +41,7 @@ export class WebSocketClient implements BaseWebSocketClient {
       })
 
       if (!['heartbeat', 'timeSync'].includes(event.name)) {
-        console.log('⬇ ', event)
+        console.log('⬇ ', JSON.stringify(event))
       }
 
       const eventHandler = this.subscribers.find(
@@ -86,7 +86,7 @@ export class WebSocketClient implements BaseWebSocketClient {
       this.webSocket.send(JSON.stringify(event))
 
       if (!['heartbeat', 'timeSync'].includes(event.name)) {
-        console.log('⬆ ', event)
+        console.log('⬆ ', JSON.stringify(event))
       }
     } catch (err) {
       console.error(err)
@@ -103,11 +103,13 @@ export class WebSocketClient implements BaseWebSocketClient {
   ): Promise<WebSocketEventHistory<Message> | undefined> {
     const response = new Response()
 
+    const reversedHistory = this.history.reverse()
+
     return new Promise(async resolve => {
       let attempts = 0
 
       while (attempts < (options?.maxAttempts || 10)) {
-        const findEvent = this.history.find(event => {
+        const findEvent = reversedHistory.find(event => {
           let result = true
 
           if (options?.requestId) {
