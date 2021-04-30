@@ -28,10 +28,16 @@ export * from './events/requests/UnsubscribeInstrumentQuotesGenerated'
 
 export * from './events/requests/GetTopAssets'
 
+export * from './events/requests/SubscribePortfolioPositionChanged'
+
+export * from './events/requests/UnsubscribePortfolioPositionChanged'
+
+export * from './events/requests/GetProfile'
+
 /**
  * Responses
  */
-export * from './events/responses/Profile'
+export * from './events/responses/GetProfile'
 
 export * from './events/responses/GetBalances'
 

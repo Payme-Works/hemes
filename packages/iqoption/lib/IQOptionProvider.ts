@@ -55,6 +55,8 @@ export class IQOptionProvider implements BaseIQOptionProvider {
 
     const account = new IQOptionAccount(this.api, this.webSocket)
 
+    account.setBalanceMode('practice')
+
     return account
   }
 }

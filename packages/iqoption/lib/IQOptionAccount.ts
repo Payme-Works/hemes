@@ -2,47 +2,122 @@ import { AxiosInstance } from 'axios'
 
 import {
   Active,
+  allInstrumentTypes,
+  BalanceMode,
   BaseIQOptionAccount,
   ExpirationPeriod,
   InstrumentType,
+  Profile,
 } from './types'
 import { getActiveId } from './utils/getActiveId'
 import { getFixedMilliseconds } from './utils/getFixedMilliseconds'
 import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
 import { GetInitializationDataRequest } from './websocket/events/requests/GetInitializationData'
+import { GetProfileRequest } from './websocket/events/requests/GetProfile'
 import { GetTopAssetsRequest } from './websocket/events/requests/GetTopAssets'
 import { GetUnderlyingListRequest } from './websocket/events/requests/GetUnderlyingList'
-import { GetBalancesResponse } from './websocket/events/responses/GetBalances'
+import { SubscribePortfolioPositionChanged } from './websocket/events/requests/SubscribePortfolioPositionChanged'
+import { UnsubscribePortfolioPositionChanged } from './websocket/events/requests/UnsubscribePortfolioPositionChanged'
+import {
+  Balance,
+  GetBalancesResponse,
+} from './websocket/events/responses/GetBalances'
 import { GetInitializationDataResponse } from './websocket/events/responses/GetInitializationData'
+import { GetProfileResponse } from './websocket/events/responses/GetProfile'
 import { GetTopAssetsResponse } from './websocket/events/responses/GetTopAssets'
 import { GetUnderlyingListResponse } from './websocket/events/responses/GetUnderlyingList'
-import { Profile, ProfileResponse } from './websocket/events/responses/Profile'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
+type BalanceTypeIds = {
+  [type in BalanceMode]: number
+}
+
+const balanceTypeIds: BalanceTypeIds = {
+  real: 1,
+  practice: 4,
+}
+
 export class IQOptionAccount implements BaseIQOptionAccount {
+  private activeBalance?: Balance
+
   constructor(public api: AxiosInstance, public webSocket: WebSocketClient) {}
 
   public async getProfile(): Promise<Profile> {
-    const profileEvent = await this.webSocket.waitFor(ProfileResponse)
+    const profileRequest = await this.webSocket.send(GetProfileRequest)
 
-    if (!profileEvent) {
-      throw new Error('Profile event not found')
+    const balancesRequest = await this.webSocket.send(GetBalancesRequest)
+
+    const profileResponse = await this.webSocket.waitFor(GetProfileResponse, {
+      requestId: profileRequest.request_id,
+    })
+
+    if (!profileResponse) {
+      throw new Error('Profile not found')
     }
 
-    const request = await this.webSocket.send(GetBalancesRequest)
-
     const balancesResponse = await this.webSocket.waitFor(GetBalancesResponse, {
-      requestId: request.request_id,
+      requestId: balancesRequest.request_id,
     })
 
     if (!balancesResponse) {
-      return profileEvent.msg
+      throw new Error('Cannot get balances')
+    }
+
+    const findBalance = balancesResponse.msg.find(
+      balance =>
+        balance.id ===
+        (this.activeBalance?.id || profileResponse.msg.result.balance_id)
+    )
+
+    if (!findBalance) {
+      throw new Error('Active balance not found')
     }
 
     return {
-      ...profileEvent.msg,
+      ...profileResponse.msg.result,
+      balance: findBalance.amount,
+      balance_id: findBalance.id,
+      balance_type: findBalance.type,
       balances: balancesResponse.msg,
     }
+  }
+
+  public async setBalanceMode(mode: BalanceMode): Promise<void> {
+    const profile = await this.getProfile()
+
+    if (this.activeBalance?.type === balanceTypeIds[mode]) {
+      return
+    }
+
+    const findBalance = profile.balances.find(
+      balance => balance.type === balanceTypeIds[mode]
+    )
+
+    if (!findBalance) {
+      throw new Error('Balance for mode not found')
+    }
+
+    this.activeBalance = findBalance
+
+    const unsubscribePortfolioPositionChangedForAllInstrumentTyeps = allInstrumentTypes.map(
+      instrumentType =>
+        this.webSocket.send(UnsubscribePortfolioPositionChanged, {
+          instrument_type: instrumentType,
+          user_balance_id: profile.balance_id,
+        })
+    )
+
+    await Promise.all(unsubscribePortfolioPositionChangedForAllInstrumentTyeps)
+
+    const subscribePortfolioPositionChangedForAllInstrumentTyeps = allInstrumentTypes.map(
+      instrumentType =>
+        this.webSocket.send(SubscribePortfolioPositionChanged, {
+          instrument_type: instrumentType,
+          user_balance_id: findBalance.id,
+        })
+    )
+
+    await Promise.all(subscribePortfolioPositionChangedForAllInstrumentTyeps)
   }
 
   public async getActiveProfit<Type extends InstrumentType>(
