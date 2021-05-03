@@ -1,5 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 
+import { sleep } from '@hemes/core'
+
 import { IQOptionAccount } from './IQOptionAccount'
 import {
   BaseIQOptionAccount,
@@ -53,9 +55,11 @@ export class IQOptionProvider implements BaseIQOptionProvider {
 
     await this.webSocket.send(SsidRequest, response.data.ssid)
 
+    await sleep(5000)
+
     const account = new IQOptionAccount(this.api, this.webSocket)
 
-    account.setBalanceMode('practice')
+    await account.setBalanceMode('practice')
 
     return account
   }

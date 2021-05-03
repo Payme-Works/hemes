@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios'
+import { PlaceDigitalOptionRequest } from 'packages/iqoption/lib/websocket/events/requests/digital-options/PlaceDigitalOption'
 
 import {
   Active,
@@ -7,10 +8,11 @@ import {
   BaseIQOptionAccount,
   ExpirationPeriod,
   InstrumentType,
+  PlaceDigitalOption,
   Profile,
 } from './types'
 import { getActiveId } from './utils/getActiveId'
-import { getFixedMilliseconds } from './utils/getFixedMilliseconds'
+import { getFixedTimestamp } from './utils/getFixedTimestamp'
 import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
 import { GetInitializationDataRequest } from './websocket/events/requests/GetInitializationData'
 import { GetProfileRequest } from './websocket/events/requests/GetProfile'
@@ -229,10 +231,29 @@ export class IQOptionAccount implements BaseIQOptionAccount {
 
     const checkIsEnabled = findAsset.schedule.some(
       item =>
-        getFixedMilliseconds(item.open) < Date.now() &&
-        getFixedMilliseconds(item.close) > Date.now()
+        getFixedTimestamp(item.open) < Date.now() &&
+        getFixedTimestamp(item.close) > Date.now()
     )
 
     return checkIsEnabled
+  }
+
+  public async placeDigitalOption({
+    active,
+    action,
+    expiration_period,
+    amount,
+  }: PlaceDigitalOption): Promise<any> {
+    if (!this.activeBalance) {
+      throw new Error('Not found any active balance')
+    }
+
+    await this.webSocket.send(PlaceDigitalOptionRequest, {
+      user_balance_id: this.activeBalance.id,
+      active,
+      action,
+      expiration_period,
+      amount,
+    })
   }
 }

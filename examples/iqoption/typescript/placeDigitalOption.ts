@@ -11,13 +11,12 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  const profit = await account.getActiveProfit(
-    'EURUSD-OTC',
-    'binary-option',
-    'm1'
-  )
-
-  console.log(profit)
+  await account.placeDigitalOption({
+    active: 'EURUSD',
+    action: 'call',
+    expiration_period: 'm15',
+    amount: 2,
+  })
 }
 
 run()

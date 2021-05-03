@@ -32,6 +32,7 @@
   "dependencies": {
     "@hemes/core": "0.0.1-next.0",
     "axios": "^0.21.1",
+    "date-fns": "^2.21.1",
     "md5": "2.3.0"
   },
   "gitHead": "fa2e0d0514775388df64a3e5df0e0d95e810e0c3",

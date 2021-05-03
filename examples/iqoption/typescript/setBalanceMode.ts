@@ -1,6 +1,6 @@
 import '../../loadEnv'
 
-import { Hemes, sleep } from '@hemes/core'
+import { Hemes } from '@hemes/core'
 import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
@@ -10,8 +10,6 @@ async function run() {
     email: String(process.env.TEST_IQOPTION_ACCOUNT_EMAIL),
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
-
-  await sleep(5000)
 
   await account.setBalanceMode('practice')
 

@@ -12,6 +12,13 @@ export interface BaseIQOptionProvider {
   logIn(credentials: LogInCredentials): Promise<BaseIQOptionAccount>
 }
 
+export interface PlaceDigitalOption {
+  active: Active
+  action: OrderAction
+  expiration_period: DigitalOptionExpirationPeriod
+  amount: number
+}
+
 export interface BaseIQOptionAccount {
   api: AxiosInstance
   webSocket: WebSocketClient
@@ -28,6 +35,7 @@ export interface BaseIQOptionAccount {
     instrumentType: Type,
     ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
   ): Promise<boolean>
+  placeDigitalOption(data: PlaceDigitalOption): Promise<any>
 }
 
 export interface WebSocketEvent<Message = any> {
@@ -250,7 +258,11 @@ export const allInstrumentTypes: InstrumentType[] = [
   'crypto',
 ]
 
+export type DigitalOptionExpirationPeriod = 'm1' | 'm5' | 'm15'
+
 export type ExpirationPeriod = 'm1' | 'm5' | 'm15' | 'm30' | 'h1'
+
+export type OrderAction = 'call' | 'put'
 
 export type Active =
   | 'EURUSD'
