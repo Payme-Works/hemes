@@ -12,10 +12,10 @@ async function run() {
   })
 
   await account.placeDigitalOption({
-    active: 'EURUSD',
+    active: 'EURUSD-OTC',
     action: 'call',
     expiration_period: 'm15',
-    amount: 2,
+    amount: 1,
   })
 }
 

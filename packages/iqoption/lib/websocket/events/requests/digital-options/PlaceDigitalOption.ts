@@ -1,11 +1,12 @@
-import { format } from 'date-fns'
+import { formatToTimeZone } from 'date-fns-timezone'
+import { getExpirationPeriodTime } from 'packages/iqoption/lib/utils/getExpirationPeriodTime'
 
 import {
   Active,
   DigitalOptionExpirationPeriod,
   OrderAction,
 } from '../../../../types'
-import { getExpirationTime } from '../../../../utils/getExpirationTime'
+import { getExpirationDate } from '../../../../utils/getExpirationDate'
 import { Request } from '../../Request'
 
 type AbbreviatedOrderAction = {
@@ -40,52 +41,28 @@ function buildDigitalOptionIdentifier(
   expirationPeriod: DigitalOptionExpirationPeriod,
   action: OrderAction
 ) {
-  /*
-    if duration == 1:
-      exp, _ = get_expiration_time(timestamp, duration)
-    else:
-      now_date = datetime.fromtimestamp(timestamp) + timedelta(minutes=1, seconds=30)
+  const expirationDate = getExpirationDate(expirationPeriod)
 
-      while True:
-          if now_date.minute % duration == 0 and time.mktime(now_date.timetuple()) - timestamp > 30:
-              break
+  const expirationPeriodTime = getExpirationPeriodTime(
+    expirationPeriod,
+    'minutes'
+  )
 
-          now_date = now_date + timedelta(minutes=1)
-
-      exp = time.mktime(now_date.timetuple())
-  */
-
-  let expirationTime: number
-
-  if (expirationPeriod === 'm1') {
-    expirationTime = getExpirationTime(expirationPeriod)
-  } else {
-    /*
-      now_date = datetime.fromtimestamp(timestamp) + timedelta(minutes=1, seconds=30)
-
-      while True:
-          if now_date.minute % duration == 0 and time.mktime(now_date.timetuple()) - timestamp > 30:
-              break
-
-          now_date = now_date + timedelta(minutes=1)
-
-      exp = time.mktime(now_date.timetuple())
-    */
-
-    expirationTime = getExpirationTime(expirationPeriod)
-  }
-
-  const expirationTimeFormatted = format(expirationTime, 'yyyyMMddHHmm')
-
-  console.log(format(expirationTime, 'yyyy/MM/dd HH:mm'))
-  console.log(expirationTimeFormatted)
+  const expirationTimeFormatted = formatToTimeZone(
+    expirationDate,
+    'YYYYMMDDHHmm',
+    {
+      timeZone: 'UTC',
+    }
+  )
 
   const digitalOptionIdentifier =
     'do' +
     active +
     expirationTimeFormatted +
     'PT' +
-    expirationPeriod.toUpperCase() +
+    expirationPeriodTime +
+    'M' +
     abbreviatedOrderAction[action] +
     'SPT'
 
@@ -101,12 +78,12 @@ export class PlaceDigitalOptionRequest extends Request<
   }
 
   public async build({
-    // user_balance_id,
+    user_balance_id,
     active,
     action,
     expiration_period,
-  }: // amount,
-  PlaceDigitalOptionRequestArgs): Promise<PlaceDigitalOptionRequestMessage> {
+    amount,
+  }: PlaceDigitalOptionRequestArgs): Promise<PlaceDigitalOptionRequestMessage> {
     const digitalOptionIdentifier = buildDigitalOptionIdentifier(
       active,
       expiration_period,
@@ -115,16 +92,14 @@ export class PlaceDigitalOptionRequest extends Request<
 
     console.log(digitalOptionIdentifier)
 
-    throw new Error('Testing')
-
-    // return {
-    //   name: 'digital-options.place-digital-option',
-    //   version: '1.0',
-    //   body: {
-    //     user_balance_id,
-    //     instrument_id,
-    //     amount: String(amount),
-    //   },
-    // }
+    return {
+      name: 'digital-options.place-digital-option',
+      version: '1.0',
+      body: {
+        user_balance_id,
+        instrument_id: digitalOptionIdentifier,
+        amount: String(amount),
+      },
+    }
   }
 }
