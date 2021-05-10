@@ -1,5 +1,4 @@
 import { AxiosInstance } from 'axios'
-import { PlaceDigitalOptionRequest } from 'packages/iqoption/lib/websocket/events/requests/digital-options/PlaceDigitalOption'
 
 import {
   Active,
@@ -8,11 +7,14 @@ import {
   BaseIQOptionAccount,
   ExpirationPeriod,
   InstrumentType,
+  OpenBinaryOption,
   PlaceDigitalOption,
   Profile,
 } from './types'
 import { getActiveId } from './utils/getActiveId'
 import { getFixedTimestamp } from './utils/getFixedTimestamp'
+import { OpenOptionRequest } from './websocket/events/requests/binary-options/OpenOption'
+import { PlaceDigitalOptionRequest } from './websocket/events/requests/digital-options/PlaceDigitalOption'
 import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
 import { GetInitializationDataRequest } from './websocket/events/requests/GetInitializationData'
 import { GetProfileRequest } from './websocket/events/requests/GetProfile'
@@ -240,9 +242,9 @@ export class IQOptionAccount implements BaseIQOptionAccount {
 
   public async placeDigitalOption({
     active,
-    action,
+    direction,
     expiration_period,
-    amount,
+    price,
   }: PlaceDigitalOption): Promise<any> {
     if (!this.activeBalance) {
       throw new Error('Not found any active balance')
@@ -251,9 +253,28 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     await this.webSocket.send(PlaceDigitalOptionRequest, {
       user_balance_id: this.activeBalance.id,
       active,
-      action,
+      direction,
       expiration_period,
-      amount,
+      price,
+    })
+  }
+
+  public async openBinaryOption({
+    active,
+    direction,
+    expiration_period,
+    price,
+  }: OpenBinaryOption): Promise<any> {
+    if (!this.activeBalance) {
+      throw new Error('Not found any active balance')
+    }
+
+    await this.webSocket.send(OpenOptionRequest, {
+      user_balance_id: this.activeBalance.id,
+      active,
+      direction,
+      expiration_period,
+      price,
     })
   }
 }

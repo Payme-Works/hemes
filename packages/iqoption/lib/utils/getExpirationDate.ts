@@ -5,7 +5,10 @@ import { ExpirationPeriod } from '../types'
 import { getExpirationPeriodTime } from './getExpirationPeriodTime'
 import { getFixedTimestamp } from './getFixedTimestamp'
 
-export function getExpirationDate(expirationPeriod: ExpirationPeriod): Date {
+export function getExpirationDate(
+  expirationPeriod: ExpirationPeriod,
+  isDigital = false
+): Date {
   const now = new Date()
 
   const expirationPeriodTime = getExpirationPeriodTime(
@@ -13,7 +16,7 @@ export function getExpirationDate(expirationPeriod: ExpirationPeriod): Date {
     'minutes'
   )
 
-  if (expirationPeriod !== 'm1') {
+  if (expirationPeriod !== 'm1' && isDigital) {
     let expirationDate = add(now, {
       minutes: 1,
       seconds: 30,

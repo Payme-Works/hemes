@@ -4,13 +4,13 @@ import { getExpirationPeriodTime } from 'packages/iqoption/lib/utils/getExpirati
 import {
   Active,
   DigitalOptionExpirationPeriod,
-  OrderAction,
+  OrderDirection,
 } from '../../../../types'
 import { getExpirationDate } from '../../../../utils/getExpirationDate'
 import { Request } from '../../Request'
 
-type AbbreviatedOrderAction = {
-  [action in OrderAction]: string
+type AbbreviatedOrderDirection = {
+  [direction in OrderDirection]: string
 }
 
 interface PlaceDigitalOptionRequestMessage {
@@ -26,12 +26,12 @@ interface PlaceDigitalOptionRequestMessage {
 interface PlaceDigitalOptionRequestArgs {
   user_balance_id: number
   active: Active
-  action: OrderAction
+  direction: OrderDirection
   expiration_period: DigitalOptionExpirationPeriod
-  amount: number
+  price: number
 }
 
-const abbreviatedOrderAction: AbbreviatedOrderAction = {
+const abbreviatedOrderDirection: AbbreviatedOrderDirection = {
   call: 'C',
   put: 'P',
 }
@@ -39,9 +39,9 @@ const abbreviatedOrderAction: AbbreviatedOrderAction = {
 function buildDigitalOptionIdentifier(
   active: Active,
   expirationPeriod: DigitalOptionExpirationPeriod,
-  action: OrderAction
+  direction: OrderDirection
 ) {
-  const expirationDate = getExpirationDate(expirationPeriod)
+  const expirationDate = getExpirationDate(expirationPeriod, true)
 
   const expirationPeriodTime = getExpirationPeriodTime(
     expirationPeriod,
@@ -63,7 +63,7 @@ function buildDigitalOptionIdentifier(
     'PT' +
     expirationPeriodTime +
     'M' +
-    abbreviatedOrderAction[action] +
+    abbreviatedOrderDirection[direction] +
     'SPT'
 
   return digitalOptionIdentifier
@@ -80,17 +80,15 @@ export class PlaceDigitalOptionRequest extends Request<
   public async build({
     user_balance_id,
     active,
-    action,
+    direction,
     expiration_period,
-    amount,
+    price,
   }: PlaceDigitalOptionRequestArgs): Promise<PlaceDigitalOptionRequestMessage> {
     const digitalOptionIdentifier = buildDigitalOptionIdentifier(
       active,
       expiration_period,
-      action
+      direction
     )
-
-    console.log(digitalOptionIdentifier)
 
     return {
       name: 'digital-options.place-digital-option',
@@ -98,7 +96,7 @@ export class PlaceDigitalOptionRequest extends Request<
       body: {
         user_balance_id,
         instrument_id: digitalOptionIdentifier,
-        amount: String(amount),
+        amount: String(price),
       },
     }
   }

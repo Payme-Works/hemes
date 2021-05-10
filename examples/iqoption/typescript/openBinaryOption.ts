@@ -11,10 +11,10 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  await account.placeDigitalOption({
+  await account.openBinaryOption({
     active: 'EURUSD',
     direction: 'call',
-    expiration_period: 'm15',
+    expiration_period: 'm5',
     price: 1,
   })
 }

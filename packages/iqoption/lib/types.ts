@@ -14,9 +14,16 @@ export interface BaseIQOptionProvider {
 
 export interface PlaceDigitalOption {
   active: Active
-  action: OrderAction
+  direction: OrderDirection
   expiration_period: DigitalOptionExpirationPeriod
-  amount: number
+  price: number
+}
+
+export interface OpenBinaryOption {
+  active: Active
+  direction: OrderDirection
+  expiration_period: ExpirationPeriod
+  price: number
 }
 
 export interface BaseIQOptionAccount {
@@ -36,6 +43,7 @@ export interface BaseIQOptionAccount {
     ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
   ): Promise<boolean>
   placeDigitalOption(data: PlaceDigitalOption): Promise<any>
+  openBinaryOption(data: OpenBinaryOption): Promise<any>
 }
 
 export interface WebSocketEvent<Message = any> {
@@ -262,7 +270,7 @@ export type DigitalOptionExpirationPeriod = 'm1' | 'm5' | 'm15'
 
 export type ExpirationPeriod = 'm1' | 'm5' | 'm15' | 'm30' | 'h1'
 
-export type OrderAction = 'call' | 'put'
+export type OrderDirection = 'call' | 'put'
 
 export type Active =
   | 'EURUSD'
