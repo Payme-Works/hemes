@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios'
 
 import { Balance } from './websocket/events/responses/GetBalances'
-import { PositionChanged } from './websocket/events/responses/PositionChanged'
+import { Position } from './websocket/events/responses/PositionChanged'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 export interface LogInCredentials {
@@ -43,8 +43,9 @@ export interface BaseIQOptionAccount {
     instrumentType: Type,
     ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
   ): Promise<boolean>
-  placeDigitalOption(data: PlaceDigitalOption): Promise<PositionChanged>
-  openBinaryOption(data: OpenBinaryOption): Promise<PositionChanged>
+  placeDigitalOption(data: PlaceDigitalOption): Promise<Position>
+  openBinaryOption(data: OpenBinaryOption): Promise<Position>
+  getPosition(positionId: string): Promise<Position>
 }
 
 export interface WebSocketEvent<Message = any> {

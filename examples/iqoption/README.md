@@ -13,6 +13,7 @@ needs.
 | Get instruments         | [JavaScript](./getInstruments.js) - [TypeScript](./typescript/getInstruments.tsx)               |
 | Place digital option    | [JavaScript](./placeDigitalOption.js) - [TypeScript](./typescript/placeDigitalOption.tsx)       |
 | Open binary option      | [JavaScript](./openBinaryOption.js) - [TypeScript](./typescript/openBinaryOption.tsx)           |
+| Get position            | [JavaScript](./getPosition.js) - [TypeScript](./typescript/getPosition.tsx)                     |
 
 ## Add an example
 

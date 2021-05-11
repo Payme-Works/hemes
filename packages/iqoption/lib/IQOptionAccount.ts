@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios'
 import { OptionResponse } from 'packages/iqoption/lib/websocket/events/responses/binary-options/Option'
 import {
-  PositionChanged,
+  Position,
   PositionChangedResponse,
 } from 'packages/iqoption/lib/websocket/events/responses/PositionChanged'
 
@@ -250,7 +250,7 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     direction,
     expiration_period,
     price,
-  }: PlaceDigitalOption): Promise<PositionChanged> {
+  }: PlaceDigitalOption): Promise<Position> {
     if (!this.activeBalance) {
       throw new Error('Not found any active balance')
     }
@@ -297,7 +297,7 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     direction,
     expiration_period,
     price,
-  }: OpenBinaryOption): Promise<PositionChanged> {
+  }: OpenBinaryOption): Promise<Position> {
     if (!this.activeBalance) {
       throw new Error('Not found any active balance')
     }
@@ -322,6 +322,21 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       PositionChangedResponse,
       {
         test: event => event.msg.external_id === option.msg.id,
+      }
+    )
+
+    if (!changedPosition) {
+      throw new Error('Cannot find changed position')
+    }
+
+    return changedPosition.msg
+  }
+
+  public async getPosition(positionId: string): Promise<Position> {
+    const changedPosition = await this.webSocket.waitFor(
+      PositionChangedResponse,
+      {
+        test: event => event.msg.id === positionId,
       }
     )
 

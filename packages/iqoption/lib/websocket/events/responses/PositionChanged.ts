@@ -1,6 +1,6 @@
 import { Response } from '../Response'
 
-export interface PositionChanged {
+export interface Position {
   version: number
   id: string
   user_id: number
@@ -100,7 +100,7 @@ export interface PositionChanged {
   }
 }
 
-export class PositionChangedResponse extends Response<PositionChanged> {
+export class PositionChangedResponse extends Response<Position> {
   public get name(): string {
     return 'position-changed'
   }
