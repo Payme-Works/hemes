@@ -1,9 +1,4 @@
 import { AxiosInstance } from 'axios'
-import { OptionResponse } from 'packages/iqoption/lib/websocket/events/responses/binary-options/Option'
-import {
-  Position,
-  PositionChangedResponse,
-} from 'packages/iqoption/lib/websocket/events/responses/PositionChanged'
 
 import {
   Active,
@@ -27,6 +22,7 @@ import { GetTopAssetsRequest } from './websocket/events/requests/GetTopAssets'
 import { GetUnderlyingListRequest } from './websocket/events/requests/GetUnderlyingList'
 import { SubscribePortfolioPositionChanged } from './websocket/events/requests/SubscribePortfolioPositionChanged'
 import { UnsubscribePortfolioPositionChanged } from './websocket/events/requests/UnsubscribePortfolioPositionChanged'
+import { OptionResponse } from './websocket/events/responses/binary-options/Option'
 import { DigitalOptionPlacedResponse } from './websocket/events/responses/digital-options/DigitalOptionPlaced'
 import {
   Balance,
@@ -36,6 +32,10 @@ import { GetInitializationDataResponse } from './websocket/events/responses/GetI
 import { GetProfileResponse } from './websocket/events/responses/GetProfile'
 import { GetTopAssetsResponse } from './websocket/events/responses/GetTopAssets'
 import { GetUnderlyingListResponse } from './websocket/events/responses/GetUnderlyingList'
+import {
+  Position,
+  PositionChangedResponse,
+} from './websocket/events/responses/PositionChanged'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 type BalanceTypeIds = {
