@@ -32,8 +32,6 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     email,
     password,
   }: LogInCredentials): Promise<BaseIQOptionAccount> {
-    console.log('Credentials ->', { email, password })
-
     this.webSocket.subscribe()
 
     const authApi = axios.create({
@@ -44,8 +42,6 @@ export class IQOptionProvider implements BaseIQOptionProvider {
       identifier: email,
       password,
     })
-
-    console.log('Login Response ->', response.data)
 
     this.api.defaults.headers.Authorization = `SSID ${response.data.ssid}`
 

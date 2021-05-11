@@ -1,5 +1,4 @@
 import { formatToTimeZone } from 'date-fns-timezone'
-import { getExpirationPeriodTime } from 'packages/iqoption/lib/utils/getExpirationPeriodTime'
 
 import {
   Active,
@@ -7,6 +6,7 @@ import {
   OrderDirection,
 } from '../../../../types'
 import { getExpirationDate } from '../../../../utils/getExpirationDate'
+import { getExpirationPeriodTime } from '../../../../utils/getExpirationPeriodTime'
 import { Request } from '../../Request'
 
 type AbbreviatedOrderDirection = {

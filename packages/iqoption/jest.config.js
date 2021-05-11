@@ -1,6 +1,7 @@
 const path = require('path')
 
 const baseConfig = require('../../jest.config')
+
 const pkg = require('./package.json')
 
 delete baseConfig.projects
@@ -11,6 +12,6 @@ module.exports = {
   ...baseConfig,
   displayName: pkg.name,
   testEnvironment: 'node',
-  setupFiles: [path.join(testsPath, 'setupTests.ts')],
+  setupFilesAfterEnv: [path.join(testsPath, 'setupTests.ts')],
   testMatch: [path.join(testsPath, '**/*.spec.{ts,tsx}')],
 }
