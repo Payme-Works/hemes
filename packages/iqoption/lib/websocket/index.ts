@@ -34,6 +34,10 @@ export * from './events/requests/UnsubscribePortfolioPositionChanged'
 
 export * from './events/requests/GetProfile'
 
+export * from './events/requests/binary-options/OpenOption'
+
+export * from './events/requests/digital-options/PlaceDigitalOption'
+
 /**
  * Responses
  */
@@ -50,6 +54,12 @@ export * from './events/responses/GetUnderlyingList'
 export * from './events/responses/SubscriptionInstrumentQuotesGenerated'
 
 export * from './events/responses/GetTopAssets'
+
+export * from './events/responses/PositionChanged'
+
+export * from './events/responses/digital-options/DigitalOptionPlaced'
+
+export * from './events/responses/binary-options/Option'
 
 /**
  * Subscribers

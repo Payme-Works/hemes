@@ -17,7 +17,7 @@ async function run() {
     'm1'
   )
 
-  console.log(isEnabled)
+  console.log('\n', 'Is active enabled:', isEnabled, '\n')
 }
 
 run()

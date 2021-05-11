@@ -17,7 +17,7 @@ async function run() {
     'm1'
   )
 
-  console.log(profit)
+  console.log('\n', 'Active profit:', profit, '\n')
 }
 
 run()

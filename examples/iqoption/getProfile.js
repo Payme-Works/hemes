@@ -13,7 +13,7 @@ async function run() {
 
   const profile = await account.getProfile()
 
-  console.log('Has received profile ->', !!profile)
+  console.log('\n', 'Has received profile:', !!profile, '\n')
 }
 
 run()

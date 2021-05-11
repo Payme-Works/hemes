@@ -1,6 +1,7 @@
 import { AxiosInstance } from 'axios'
 
 import { Balance } from './websocket/events/responses/GetBalances'
+import { PositionChanged } from './websocket/events/responses/PositionChanged'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 export interface LogInCredentials {
@@ -42,8 +43,8 @@ export interface BaseIQOptionAccount {
     instrumentType: Type,
     ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
   ): Promise<boolean>
-  placeDigitalOption(data: PlaceDigitalOption): Promise<any>
-  openBinaryOption(data: OpenBinaryOption): Promise<any>
+  placeDigitalOption(data: PlaceDigitalOption): Promise<PositionChanged>
+  openBinaryOption(data: OpenBinaryOption): Promise<PositionChanged>
 }
 
 export interface WebSocketEvent<Message = any> {
@@ -71,10 +72,11 @@ export type CheckForUnion<T, Error, Ok> = [T] extends [UnionToIntersection<T>]
 
 export type OptionalSpread<Arg = undefined> = Arg extends undefined ? [] : [Arg]
 
-export interface WaitForOptions {
+export interface WaitForOptions<Message> {
   requestId?: string
   maxAttempts?: number
   delay?: number
+  test?: (event: WebSocketEvent<Message>) => boolean
 }
 
 export interface BaseWebSocketClient {
@@ -88,7 +90,7 @@ export interface BaseWebSocketClient {
   ): Promise<WebSocketEvent<Message>>
   waitFor<Message>(
     Response: EventResponseConstructor<Message>,
-    options?: WaitForOptions
+    options?: WaitForOptions<Message>
   ): Promise<WebSocketEventHistory<Message> | undefined>
 }
 

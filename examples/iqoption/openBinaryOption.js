@@ -11,12 +11,14 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  await account.openBinaryOption({
+  const position = await account.openBinaryOption({
     active: 'EURUSD',
     direction: 'call',
     expiration_period: 'm5',
     price: 1,
   })
+
+  console.log('\n', 'Position:', JSON.stringify(position), '\n')
 }
 
 run()

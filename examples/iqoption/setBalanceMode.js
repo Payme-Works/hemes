@@ -15,7 +15,9 @@ async function run() {
 
   const profile = await account.getProfile()
 
-  console.log(profile.balance, profile.balance_id, profile.balance_type)
+  console.log('\n', 'Balance:', profile.balance)
+  console.log('Balance ID:', profile.balance_id, profile.balance_type)
+  console.log('Balance type:', profile.balance_type, '\n')
 }
 
 run()
