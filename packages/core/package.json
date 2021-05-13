@@ -1,6 +1,6 @@
 {
   "name": "@hemes/core",
-  "version": "0.0.1-next.0",
+  "version": "0.0.1-next.2",
   "description": "Hemes core package",
   "author": "André Victor <andrevcv1@gmail.com>",
   "homepage": "https://github.com/PaymeTrade/hemes#readme",
@@ -26,7 +26,6 @@
   "bugs": {
     "url": "https://github.com/PaymeTrade/hemes/issues"
   },
-  "dependencies": {},
   "publishConfig": {
     "access": "public"
   },
