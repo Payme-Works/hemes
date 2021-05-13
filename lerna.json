@@ -14,6 +14,7 @@
       "npmClient": "npm",
       "allowBranch": [
         "main",
+        "release/*",
         "develop"
       ],
       "conventionalCommits": true,
