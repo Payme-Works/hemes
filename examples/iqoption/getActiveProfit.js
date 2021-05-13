@@ -1,19 +1,23 @@
 import '../../loadEnv'
 
 import { Hemes } from '@hemes/core'
-import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
+import { IQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
-  const hemes = new Hemes(IQOptionProvider).getProvider<BaseIQOptionProvider>()
+  const hemes = new Hemes(IQOptionProvider).getProvider()
 
   const account = await hemes.logIn({
     email: String(process.env.TEST_IQOPTION_ACCOUNT_EMAIL),
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  const profile = await account.getProfile()
+  const profit = await account.getActiveProfit(
+    'EURUSD-OTC',
+    'binary-option',
+    'm1'
+  )
 
-  console.log('\n', 'Has received profile:', !!profile, '\n')
+  console.log('\n', 'Active profit:', profit, '\n')
 }
 
 run()

@@ -9,9 +9,9 @@ import {
   BaseEventSubscriber,
   BaseWebSocketClient,
   WaitForOptions,
-  EventRequestNew,
-  OptionalSpread,
-  EventResponseNew,
+  EventRequestConstructor,
+  EventResponseConstructor,
+  CheckForUnion,
 } from '../types'
 
 import { HeartbeatSubscriber } from './events/subscribers/Heartbeat'
@@ -41,7 +41,7 @@ export class WebSocketClient implements BaseWebSocketClient {
       })
 
       if (!['heartbeat', 'timeSync'].includes(event.name)) {
-        console.log('⬇ ', event)
+        console.log('⬇ ', JSON.stringify(event))
       }
 
       const eventHandler = this.subscribers.find(
@@ -63,8 +63,8 @@ export class WebSocketClient implements BaseWebSocketClient {
   }
 
   public async send<Message, Args = undefined>(
-    Request: EventRequestNew<Message, Args>,
-    ...args: OptionalSpread<Args>
+    Request: EventRequestConstructor<Message, Args>,
+    args?: CheckForUnion<Args, never, Args>
   ): Promise<WebSocketEvent<Message>> {
     const request = new Request()
 
@@ -74,7 +74,7 @@ export class WebSocketClient implements BaseWebSocketClient {
       await sleep(50)
     }
 
-    const message = await request.build(...args)
+    const message = await request.build(args as any)
 
     const event: WebSocketEvent<Message> = {
       name: request.name,
@@ -86,7 +86,7 @@ export class WebSocketClient implements BaseWebSocketClient {
       this.webSocket.send(JSON.stringify(event))
 
       if (!['heartbeat', 'timeSync'].includes(event.name)) {
-        console.log('⬆ ', event)
+        console.log('⬆ ', JSON.stringify(event))
       }
     } catch (err) {
       console.error(err)
@@ -98,16 +98,18 @@ export class WebSocketClient implements BaseWebSocketClient {
   }
 
   public async waitFor<Message>(
-    Response: EventResponseNew<Message>,
-    options?: WaitForOptions
+    Response: EventResponseConstructor<Message>,
+    options?: WaitForOptions<Message>
   ): Promise<WebSocketEventHistory<Message> | undefined> {
     const response = new Response()
+
+    const reversedHistory = this.history.reverse()
 
     return new Promise(async resolve => {
       let attempts = 0
 
       while (attempts < (options?.maxAttempts || 10)) {
-        const findEvent = this.history.find(event => {
+        const findEvent = reversedHistory.find(event => {
           let result = true
 
           if (options?.requestId) {
@@ -118,12 +120,22 @@ export class WebSocketClient implements BaseWebSocketClient {
         }) as WebSocketEventHistory<Message>
 
         if (findEvent) {
-          const testPassed = response.test(findEvent)
+          const responseTestPassed = response.test(findEvent)
 
-          if (!testPassed) {
+          if (!responseTestPassed) {
             resolve(undefined)
 
             return
+          }
+
+          if (options?.test) {
+            const optionsTestPassed = options.test(findEvent)
+
+            if (!optionsTestPassed) {
+              resolve(undefined)
+
+              return
+            }
           }
 
           resolve(findEvent)

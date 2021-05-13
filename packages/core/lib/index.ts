@@ -6,7 +6,7 @@ export * from './Hemes'
 /**
  * Utils
  */
-export * from './utils/sleep'
+export * from './utils'
 
 /**
  * Types

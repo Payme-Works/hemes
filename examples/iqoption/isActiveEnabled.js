@@ -11,9 +11,13 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  const profile = await account.getProfile()
+  const isEnabled = await account.isActiveEnabled(
+    'EURUSD',
+    'binary-option',
+    'm1'
+  )
 
-  console.log('\n', 'Has received profile:', !!profile, '\n')
+  console.log('\n', 'Is active enabled:', isEnabled, '\n')
 }
 
 run()

@@ -11,9 +11,13 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
+  await account.setBalanceMode('practice')
+
   const profile = await account.getProfile()
 
-  console.log('\n', 'Has received profile:', !!profile, '\n')
+  console.log('\n', 'Balance:', profile.balance)
+  console.log('Balance ID:', profile.balance_id, profile.balance_type)
+  console.log('Balance type:', profile.balance_type, '\n')
 }
 
 run()

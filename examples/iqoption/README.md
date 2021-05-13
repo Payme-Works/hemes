@@ -4,10 +4,16 @@ This folder contains Hemes for IQ Option examples for different types of actions
 them were tested and may work properly. You can also customize them for your
 needs.
 
-| Name        | Link                                                                      |
-| ----------- | ------------------------------------------------------------------------- |
-| Log in      | [JavaScript](./logIn.js) - [TypeScript](./typescript/logIn.tsx)           |
-| Get profile | [JavaScript](./getProfile.js) - [TypeScript](./typescript/getProfile.tsx) |
+| Name                    | Link                                                                                            |
+| ----------------------- | ----------------------------------------------------------------------------------------------- |
+| Log in                  | [JavaScript](./logIn.js) - [TypeScript](./typescript/logIn.tsx)                                 |
+| Get initialization data | [JavaScript](./getInitializationData.js) - [TypeScript](./typescript/getInitializationData.tsx) |
+| Get profile             | [JavaScript](./getProfile.js) - [TypeScript](./typescript/getProfile.tsx)                       |
+| Get underlying list     | [JavaScript](./getUnderlyingList.js) - [TypeScript](./typescript/getUnderlyingList.tsx)         |
+| Get instruments         | [JavaScript](./getInstruments.js) - [TypeScript](./typescript/getInstruments.tsx)               |
+| Place digital option    | [JavaScript](./placeDigitalOption.js) - [TypeScript](./typescript/placeDigitalOption.tsx)       |
+| Open binary option      | [JavaScript](./openBinaryOption.js) - [TypeScript](./typescript/openBinaryOption.tsx)           |
+| Get position            | [JavaScript](./getPosition.js) - [TypeScript](./typescript/getPosition.tsx)                     |
 
 ## Add an example
 

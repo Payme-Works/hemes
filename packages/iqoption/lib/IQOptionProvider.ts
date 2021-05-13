@@ -1,7 +1,13 @@
 import axios, { AxiosInstance } from 'axios'
 
+import { sleep } from '@hemes/core'
+
 import { IQOptionAccount } from './IQOptionAccount'
-import { BaseIQOptionAccount, BaseIQOptionProvider, Credentials } from './types'
+import {
+  BaseIQOptionAccount,
+  BaseIQOptionProvider,
+  LogInCredentials,
+} from './types'
 import { SsidRequest } from './websocket/events/requests/SSID'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
@@ -25,9 +31,7 @@ export class IQOptionProvider implements BaseIQOptionProvider {
   public async logIn({
     email,
     password,
-  }: Credentials): Promise<BaseIQOptionAccount> {
-    console.log('Credentials ->', { email, password })
-
+  }: LogInCredentials): Promise<BaseIQOptionAccount> {
     this.webSocket.subscribe()
 
     const authApi = axios.create({
@@ -39,8 +43,6 @@ export class IQOptionProvider implements BaseIQOptionProvider {
       password,
     })
 
-    console.log('Login Response ->', response.data)
-
     this.api.defaults.headers.Authorization = `SSID ${response.data.ssid}`
 
     if (response.data.code !== 'success') {
@@ -49,7 +51,11 @@ export class IQOptionProvider implements BaseIQOptionProvider {
 
     await this.webSocket.send(SsidRequest, response.data.ssid)
 
+    await sleep(5000)
+
     const account = new IQOptionAccount(this.api, this.webSocket)
+
+    await account.setBalanceMode('practice')
 
     return account
   }

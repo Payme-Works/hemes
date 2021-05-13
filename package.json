@@ -35,6 +35,7 @@
     "@commitlint/travis-cli": "12.0.1",
     "@rocketseat/commitlint-config": "^0.0.3",
     "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-multi-entry": "^4.0.0",
     "@types/dot-object": "2.1.2",
     "@types/dotenv": "^8.2.0",
     "@types/jest": "26.0.20",

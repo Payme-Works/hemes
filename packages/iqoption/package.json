@@ -1,13 +1,13 @@
 {
   "name": "@hemes/iqoption",
-  "version": "0.0.1-next.1",
+  "version": "0.0.1-next.2",
   "description": "Hemes IQ Option implementation",
   "author": "André Victor <andrevcv1@gmail.com>",
   "homepage": "https://github.com/PaymeTrade/hemes#readme",
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "types": "typings/index.d.ts",
+  "types": "typings/iqoption/lib/index.d.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -30,8 +30,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@hemes/core": "0.0.1-next.1",
+    "@hemes/core": "0.0.1-next.2",
     "axios": "^0.21.1",
+    "date-fns": "^2.21.1",
+    "date-fns-timezone": "^0.1.4",
     "md5": "2.3.0"
   },
   "gitHead": "fa2e0d0514775388df64a3e5df0e0d95e810e0c3",
