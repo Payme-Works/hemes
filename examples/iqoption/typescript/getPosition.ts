@@ -1,6 +1,6 @@
 import '../../loadEnv'
 
-import { Hemes } from '@hemes/core'
+import { Hemes, sleep } from '@hemes/core'
 import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
@@ -17,6 +17,8 @@ async function run() {
     expiration_period: 'm1',
     price: 1,
   })
+
+  await sleep(100000)
 
   const position = await account.getPosition(placedPosition.id)
 

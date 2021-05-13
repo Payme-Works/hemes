@@ -1,5 +1,4 @@
 import { AxiosInstance } from 'axios'
-import { WebSocketClient } from 'packages/iqoption/lib/websocket/WebSocketClient'
 
 import { Hemes } from '@hemes/core'
 import {
@@ -8,6 +7,7 @@ import {
   BaseWebSocketClient,
   WebSocketEventHistory,
   BaseIQOptionAccount,
+  WebSocketClient,
 } from '@hemes/iqoption'
 
 import { SsidRequest } from '../lib/websocket/events/requests/SSID'
