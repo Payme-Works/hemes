@@ -13,12 +13,10 @@
     "publish": {
       "npmClient": "npm",
       "allowBranch": [
-        "main",
-        "release/*",
-        "develop"
+        "release/*"
       ],
       "conventionalCommits": true,
-      "message": "chore(release): Publish %s",
+      "message": "chore: Publish release",
       "registry": "https://registry.npmjs.org/"
     }
   },
