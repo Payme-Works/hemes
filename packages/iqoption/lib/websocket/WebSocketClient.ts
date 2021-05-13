@@ -99,7 +99,7 @@ export class WebSocketClient implements BaseWebSocketClient {
 
   public async waitFor<Message>(
     Response: EventResponseConstructor<Message>,
-    options?: WaitForOptions
+    options?: WaitForOptions<Message>
   ): Promise<WebSocketEventHistory<Message> | undefined> {
     const response = new Response()
 
@@ -120,12 +120,22 @@ export class WebSocketClient implements BaseWebSocketClient {
         }) as WebSocketEventHistory<Message>
 
         if (findEvent) {
-          const testPassed = response.test(findEvent)
+          const responseTestPassed = response.test(findEvent)
 
-          if (!testPassed) {
+          if (!responseTestPassed) {
             resolve(undefined)
 
             return
+          }
+
+          if (options?.test) {
+            const optionsTestPassed = options.test(findEvent)
+
+            if (!optionsTestPassed) {
+              resolve(undefined)
+
+              return
+            }
           }
 
           resolve(findEvent)

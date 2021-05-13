@@ -1,6 +1,7 @@
 import { AxiosInstance } from 'axios'
 
 import { Balance } from './websocket/events/responses/GetBalances'
+import { Position } from './websocket/events/responses/PositionChanged'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 export interface LogInCredentials {
@@ -10,6 +11,20 @@ export interface LogInCredentials {
 
 export interface BaseIQOptionProvider {
   logIn(credentials: LogInCredentials): Promise<BaseIQOptionAccount>
+}
+
+export interface PlaceDigitalOption {
+  active: Active
+  direction: OrderDirection
+  expiration_period: DigitalOptionExpirationPeriod
+  price: number
+}
+
+export interface OpenBinaryOption {
+  active: Active
+  direction: OrderDirection
+  expiration_period: ExpirationPeriod
+  price: number
 }
 
 export interface BaseIQOptionAccount {
@@ -28,6 +43,9 @@ export interface BaseIQOptionAccount {
     instrumentType: Type,
     ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
   ): Promise<boolean>
+  placeDigitalOption(data: PlaceDigitalOption): Promise<Position>
+  openBinaryOption(data: OpenBinaryOption): Promise<Position>
+  getPosition(positionId: string): Promise<Position>
 }
 
 export interface WebSocketEvent<Message = any> {
@@ -55,10 +73,11 @@ export type CheckForUnion<T, Error, Ok> = [T] extends [UnionToIntersection<T>]
 
 export type OptionalSpread<Arg = undefined> = Arg extends undefined ? [] : [Arg]
 
-export interface WaitForOptions {
+export interface WaitForOptions<Message> {
   requestId?: string
   maxAttempts?: number
   delay?: number
+  test?: (event: WebSocketEvent<Message>) => boolean
 }
 
 export interface BaseWebSocketClient {
@@ -72,7 +91,7 @@ export interface BaseWebSocketClient {
   ): Promise<WebSocketEvent<Message>>
   waitFor<Message>(
     Response: EventResponseConstructor<Message>,
-    options?: WaitForOptions
+    options?: WaitForOptions<Message>
   ): Promise<WebSocketEventHistory<Message> | undefined>
 }
 
@@ -250,7 +269,11 @@ export const allInstrumentTypes: InstrumentType[] = [
   'crypto',
 ]
 
+export type DigitalOptionExpirationPeriod = 'm1' | 'm5' | 'm15'
+
 export type ExpirationPeriod = 'm1' | 'm5' | 'm15' | 'm30' | 'h1'
+
+export type OrderDirection = 'call' | 'put'
 
 export type Active =
   | 'EURUSD'

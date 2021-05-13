@@ -1,6 +1,6 @@
 import '../../loadEnv'
 
-import { Hemes, sleep } from '@hemes/core'
+import { Hemes } from '@hemes/core'
 import { IQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
@@ -11,11 +11,13 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  await sleep(5000)
+  const profit = await account.getActiveProfit(
+    'EURUSD-OTC',
+    'binary-option',
+    'm1'
+  )
 
-  const profit = await account.getActiveProfit('EURUSD', 'binary-option', 'm1')
-
-  console.log(profit)
+  console.log('\n', 'Active profit:', profit, '\n')
 }
 
 run()

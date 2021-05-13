@@ -7,10 +7,14 @@ import {
   BaseIQOptionAccount,
   ExpirationPeriod,
   InstrumentType,
+  OpenBinaryOption,
+  PlaceDigitalOption,
   Profile,
 } from './types'
 import { getActiveId } from './utils/getActiveId'
-import { getFixedMilliseconds } from './utils/getFixedMilliseconds'
+import { getFixedTimestamp } from './utils/getFixedTimestamp'
+import { OpenOptionRequest } from './websocket/events/requests/binary-options/OpenOption'
+import { PlaceDigitalOptionRequest } from './websocket/events/requests/digital-options/PlaceDigitalOption'
 import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
 import { GetInitializationDataRequest } from './websocket/events/requests/GetInitializationData'
 import { GetProfileRequest } from './websocket/events/requests/GetProfile'
@@ -18,6 +22,8 @@ import { GetTopAssetsRequest } from './websocket/events/requests/GetTopAssets'
 import { GetUnderlyingListRequest } from './websocket/events/requests/GetUnderlyingList'
 import { SubscribePortfolioPositionChanged } from './websocket/events/requests/SubscribePortfolioPositionChanged'
 import { UnsubscribePortfolioPositionChanged } from './websocket/events/requests/UnsubscribePortfolioPositionChanged'
+import { OptionResponse } from './websocket/events/responses/binary-options/Option'
+import { DigitalOptionPlacedResponse } from './websocket/events/responses/digital-options/DigitalOptionPlaced'
 import {
   Balance,
   GetBalancesResponse,
@@ -26,6 +32,10 @@ import { GetInitializationDataResponse } from './websocket/events/responses/GetI
 import { GetProfileResponse } from './websocket/events/responses/GetProfile'
 import { GetTopAssetsResponse } from './websocket/events/responses/GetTopAssets'
 import { GetUnderlyingListResponse } from './websocket/events/responses/GetUnderlyingList'
+import {
+  Position,
+  PositionChangedResponse,
+} from './websocket/events/responses/PositionChanged'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 type BalanceTypeIds = {
@@ -47,26 +57,25 @@ export class IQOptionAccount implements BaseIQOptionAccount {
 
     const balancesRequest = await this.webSocket.send(GetBalancesRequest)
 
-    const profileResponse = await this.webSocket.waitFor(GetProfileResponse, {
+    const profile = await this.webSocket.waitFor(GetProfileResponse, {
       requestId: profileRequest.request_id,
     })
 
-    if (!profileResponse) {
+    if (!profile) {
       throw new Error('Profile not found')
     }
 
-    const balancesResponse = await this.webSocket.waitFor(GetBalancesResponse, {
+    const balances = await this.webSocket.waitFor(GetBalancesResponse, {
       requestId: balancesRequest.request_id,
     })
 
-    if (!balancesResponse) {
+    if (!balances) {
       throw new Error('Cannot get balances')
     }
 
-    const findBalance = balancesResponse.msg.find(
+    const findBalance = balances.msg.find(
       balance =>
-        balance.id ===
-        (this.activeBalance?.id || profileResponse.msg.result.balance_id)
+        balance.id === (this.activeBalance?.id || profile.msg.result.balance_id)
     )
 
     if (!findBalance) {
@@ -74,11 +83,11 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     }
 
     return {
-      ...profileResponse.msg.result,
+      ...profile.msg.result,
       balance: findBalance.amount,
       balance_id: findBalance.id,
       balance_type: findBalance.type,
-      balances: balancesResponse.msg,
+      balances: balances.msg,
     }
   }
 
@@ -229,10 +238,112 @@ export class IQOptionAccount implements BaseIQOptionAccount {
 
     const checkIsEnabled = findAsset.schedule.some(
       item =>
-        getFixedMilliseconds(item.open) < Date.now() &&
-        getFixedMilliseconds(item.close) > Date.now()
+        getFixedTimestamp(item.open) < Date.now() &&
+        getFixedTimestamp(item.close) > Date.now()
     )
 
     return checkIsEnabled
+  }
+
+  public async placeDigitalOption({
+    active,
+    direction,
+    expiration_period,
+    price,
+  }: PlaceDigitalOption): Promise<Position> {
+    if (!this.activeBalance) {
+      throw new Error('Not found any active balance')
+    }
+
+    const placeDigitalOptionRequest = await this.webSocket.send(
+      PlaceDigitalOptionRequest,
+      {
+        user_balance_id: this.activeBalance.id,
+        active,
+        direction,
+        expiration_period,
+        price,
+      }
+    )
+
+    const placedDigitalOption = await this.webSocket.waitFor(
+      DigitalOptionPlacedResponse,
+      {
+        requestId: placeDigitalOptionRequest.request_id,
+      }
+    )
+
+    if (!placedDigitalOption) {
+      throw new Error('Cannot find placed digital option')
+    }
+
+    const changedPosition = await this.webSocket.waitFor(
+      PositionChangedResponse,
+      {
+        test: event =>
+          event.msg.raw_event.order_ids.includes(placedDigitalOption.msg.id),
+      }
+    )
+
+    if (!changedPosition) {
+      throw new Error('Cannot find changed position')
+    }
+
+    return changedPosition.msg
+  }
+
+  public async openBinaryOption({
+    active,
+    direction,
+    expiration_period,
+    price,
+  }: OpenBinaryOption): Promise<Position> {
+    if (!this.activeBalance) {
+      throw new Error('Not found any active balance')
+    }
+
+    const openOptionRequest = await this.webSocket.send(OpenOptionRequest, {
+      user_balance_id: this.activeBalance.id,
+      active,
+      direction,
+      expiration_period,
+      price,
+    })
+
+    const option = await this.webSocket.waitFor(OptionResponse, {
+      requestId: openOptionRequest.request_id,
+    })
+
+    if (!option) {
+      throw new Error('Cannot find option')
+    }
+
+    const changedPosition = await this.webSocket.waitFor(
+      PositionChangedResponse,
+      {
+        test: event => event.msg.external_id === option.msg.id,
+      }
+    )
+
+    if (!changedPosition) {
+      throw new Error('Cannot find changed position')
+    }
+
+    return changedPosition.msg
+  }
+
+  public async getPosition(positionId: string): Promise<Position> {
+    const changedPosition = await this.webSocket.waitFor(
+      PositionChangedResponse,
+      {
+        test: event => event.msg.id === positionId,
+      }
+    )
+
+    if (!changedPosition) {
+      throw new Error('Cannot find changed position')
+    }
+
+    return changedPosition.msg
   }
 }

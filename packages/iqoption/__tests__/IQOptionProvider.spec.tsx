@@ -1,21 +1,82 @@
+import { AxiosInstance } from 'axios'
+
 import { Hemes } from '@hemes/core'
-import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
+import {
+  IQOptionProvider,
+  BaseIQOptionProvider,
+  BaseWebSocketClient,
+  WebSocketEventHistory,
+  BaseIQOptionAccount,
+  WebSocketClient,
+} from '@hemes/iqoption'
 
 import { SsidRequest } from '../lib/websocket/events/requests/SSID'
 
 const mockWebSocketClient = {
   subscribe: jest.fn(),
   send: jest.fn(),
+  waitFor: jest.fn(),
+}
+
+const mockIqOptionAccount = {
+  getProfile: jest.fn(),
+  setBalanceMode: jest.fn(),
+  getActiveProfit: jest.fn(),
+  isActiveEnabled: jest.fn(),
+  placeDigitalOption: jest.fn(),
+  openBinaryOption: jest.fn(),
+  getPosition: jest.fn(),
 }
 
 jest.mock('../lib/websocket/WebSocketClient', () => ({
-  WebSocketClient: class MockWebSocketClient {
+  WebSocketClient: class MockWebSocketClient implements BaseWebSocketClient {
+    history: WebSocketEventHistory[]
+
     subscribe() {
       return mockWebSocketClient.subscribe()
     }
 
     send(...args: any[]) {
       return mockWebSocketClient.send(...args)
+    }
+
+    waitFor(...args: any[]) {
+      return mockWebSocketClient.send(...args)
+    }
+  },
+}))
+
+jest.mock('../lib/IQOptionAccount', () => ({
+  IQOptionAccount: class MockIQOptionAccount implements BaseIQOptionAccount {
+    api: AxiosInstance
+    webSocket: WebSocketClient
+
+    getProfile() {
+      return mockIqOptionAccount.getProfile()
+    }
+
+    setBalanceMode(...args: any[]) {
+      return mockIqOptionAccount.setBalanceMode(...args)
+    }
+
+    getActiveProfit(...args: any[]) {
+      return mockIqOptionAccount.getActiveProfit(...args)
+    }
+
+    isActiveEnabled(...args: any[]) {
+      return mockIqOptionAccount.isActiveEnabled(...args)
+    }
+
+    placeDigitalOption(...args: any[]) {
+      return mockIqOptionAccount.placeDigitalOption(...args)
+    }
+
+    openBinaryOption(...args: any[]) {
+      return mockIqOptionAccount.openBinaryOption(...args)
+    }
+
+    getPosition(...args: any[]) {
+      return mockIqOptionAccount.getPosition(...args)
     }
   },
 }))
@@ -40,5 +101,7 @@ describe('IQOptionProvider', () => {
       SsidRequest,
       expect.any(String)
     )
+
+    expect(mockIqOptionAccount.setBalanceMode).toBeCalled()
   })
 })

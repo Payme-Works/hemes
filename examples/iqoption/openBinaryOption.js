@@ -11,13 +11,14 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  await account.setBalanceMode('practice')
+  const position = await account.openBinaryOption({
+    active: 'EURUSD',
+    direction: 'call',
+    expiration_period: 'm5',
+    price: 1,
+  })
 
-  const profile = await account.getProfile()
-
-  console.log('\n', 'Balance:', profile.balance)
-  console.log('Balance ID:', profile.balance_id, profile.balance_type)
-  console.log('Balance type:', profile.balance_type, '\n')
+  console.log('\n', 'Position:', JSON.stringify(position), '\n')
 }
 
 run()

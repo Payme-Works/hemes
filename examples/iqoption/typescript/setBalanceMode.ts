@@ -1,6 +1,6 @@
 import '../../loadEnv'
 
-import { Hemes, sleep } from '@hemes/core'
+import { Hemes } from '@hemes/core'
 import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
@@ -11,13 +11,13 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  await sleep(5000)
-
   await account.setBalanceMode('practice')
 
   const profile = await account.getProfile()
 
-  console.log(profile.balance, profile.balance_id, profile.balance_type)
+  console.log('\n', 'Balance:', profile.balance)
+  console.log('Balance ID:', profile.balance_id, profile.balance_type)
+  console.log('Balance type:', profile.balance_type, '\n')
 }
 
 run()

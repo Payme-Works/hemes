@@ -1,6 +1,6 @@
 import '../../loadEnv'
 
-import { Hemes, sleep } from '@hemes/core'
+import { Hemes } from '@hemes/core'
 import { IQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
@@ -11,11 +11,9 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  await sleep(5000)
-
   const profile = await account.getProfile()
 
-  console.log('Has received profile ->', !!profile)
+  console.log('\n', 'Has received profile:', !!profile, '\n')
 }
 
 run()
