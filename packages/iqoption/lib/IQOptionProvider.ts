@@ -6,9 +6,15 @@ import { IQOptionAccount } from './IQOptionAccount'
 import {
   BaseIQOptionAccount,
   BaseIQOptionProvider,
+  Candle,
   LogInCredentials,
 } from './types'
+import { GetCandlesRequest } from './websocket/events/requests/GetCandles'
 import { SsidRequest } from './websocket/events/requests/SSID'
+import {
+  CandleResponseData,
+  GetCandlesResponse,
+} from './websocket/events/responses/GetCandles'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
 interface LoginResponse {
@@ -58,5 +64,32 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     await account.setBalanceMode('practice')
 
     return account
+  }
+
+  public async getCandles(
+    active: number,
+    interval: string | number,
+    amount: number,
+    endtime: number
+  ): Promise<Candle[]> {
+    const getCandlesRequest = await this.webSocket.send(GetCandlesRequest, {
+      active_id: active,
+      interval,
+      endtime,
+      amount,
+    })
+
+    const getCandlesResponse = await this.webSocket.waitFor<CandleResponseData>(
+      GetCandlesResponse,
+      {
+        requestId: getCandlesRequest.request_id,
+      }
+    )
+
+    if (!getCandlesResponse) {
+      throw new Error('Candles not found')
+    }
+
+    return getCandlesResponse.msg.candles
   }
 }
