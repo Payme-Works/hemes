@@ -349,10 +349,10 @@
     resolve-global "1.0.0"
     yargs "^16.2.0"
 
-"@commitlint/config-conventional@12.0.1":
-  version "12.0.1"
-  resolved "https://registry.npmjs.org/@commitlint/config-conventional/-/config-conventional-12.0.1.tgz"
-  integrity sha512-1ZhB135lh47zVmf1orwcjxuKuam11fJIH/bdVxW9XiQv8XPwC6iIp19knfl8FcOT78AVBnes1z6EVxgUeP2/4Q==
+"@commitlint/config-conventional@^12.1.4":
+  version "12.1.4"
+  resolved "https://registry.yarnpkg.com/@commitlint/config-conventional/-/config-conventional-12.1.4.tgz#95bbab622f117a8a3e49f95917b08655040c66a8"
+  integrity sha512-ZIdzmdy4o4WyqywMEpprRCrehjCSQrHkaRTVZV411GyLigFQHlEBSJITAihLAWe88Qy/8SyoIe5uKvAsV5vRqQ==
   dependencies:
     conventional-changelog-conventionalcommits "^4.3.1"
 
@@ -1540,11 +1540,6 @@
   integrity sha512-W2J9qlVIU11jMwKHUp5/rbVUeErqelCsO5vW5PKNb7wAXQVUz87Rc+imjlEvpvbH8yUb+KHmv8NEjVZdsdpyxA==
   dependencies:
     "@octokit/openapi-types" "^6.0.0"
-
-"@rocketseat/commitlint-config@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/@rocketseat/commitlint-config/-/commitlint-config-0.0.3.tgz"
-  integrity sha512-X8so6dbZQ8fLDj4cShLB9zyE7IRBDZ0RvbnvGqTKepxckdltbPBCTHYFEYTZ7sfBg2uINAOn5BQEHodh9Rad3g==
 
 "@rollup/plugin-json@^4.1.0":
   version "4.1.0"
