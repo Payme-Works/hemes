@@ -16,7 +16,7 @@
         "release/*"
       ],
       "conventionalCommits": true,
-      "message": "chore: Publish release",
+      "message": "chore: Publish",
       "registry": "https://registry.npmjs.org/"
     }
   },
