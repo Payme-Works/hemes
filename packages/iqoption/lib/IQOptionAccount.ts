@@ -5,6 +5,7 @@ import {
   allInstrumentTypes,
   BalanceMode,
   BaseIQOptionAccount,
+  Candle,
   ExpirationPeriod,
   InstrumentType,
   OpenBinaryOption,
@@ -16,6 +17,7 @@ import { getFixedTimestamp } from './utils/getFixedTimestamp'
 import { OpenOptionRequest } from './websocket/events/requests/binary-options/OpenOption'
 import { PlaceDigitalOptionRequest } from './websocket/events/requests/digital-options/PlaceDigitalOption'
 import { GetBalancesRequest } from './websocket/events/requests/GetBalances'
+import { GetCandlesRequest } from './websocket/events/requests/GetCandles'
 import { GetInitializationDataRequest } from './websocket/events/requests/GetInitializationData'
 import { GetProfileRequest } from './websocket/events/requests/GetProfile'
 import { GetTopAssetsRequest } from './websocket/events/requests/GetTopAssets'
@@ -28,6 +30,10 @@ import {
   Balance,
   GetBalancesResponse,
 } from './websocket/events/responses/GetBalances'
+import {
+  CandlesResponse,
+  GetCandlesResponse,
+} from './websocket/events/responses/GetCandles'
 import { GetInitializationDataResponse } from './websocket/events/responses/GetInitializationData'
 import { GetProfileResponse } from './websocket/events/responses/GetProfile'
 import { GetTopAssetsResponse } from './websocket/events/responses/GetTopAssets'
@@ -37,7 +43,6 @@ import {
   PositionChangedResponse,
 } from './websocket/events/responses/PositionChanged'
 import { WebSocketClient } from './websocket/WebSocketClient'
-
 type BalanceTypeIds = {
   [type in BalanceMode]: number
 }
@@ -345,5 +350,32 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     }
 
     return changedPosition.msg
+  }
+
+  public async getCandles(
+    active: Active,
+    timePeriod: ExpirationPeriod,
+    count: number,
+    toDate?: Date | number
+  ): Promise<Candle[]> {
+    const getCandlesRequest = await this.webSocket.send(GetCandlesRequest, {
+      active,
+      timePeriod,
+      count,
+      toDate: toDate || Date.now(),
+    })
+
+    const getCandlesResponse = await this.webSocket.waitFor<CandlesResponse>(
+      GetCandlesResponse,
+      {
+        requestId: getCandlesRequest.request_id,
+      }
+    )
+
+    if (!getCandlesResponse) {
+      throw new Error('Candles not found')
+    }
+
+    return getCandlesResponse.msg.candles
   }
 }

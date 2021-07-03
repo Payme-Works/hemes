@@ -2,4 +2,5 @@
 . "$(dirname "$0")/_/husky.sh"
 . "$(dirname "$0")/common.sh"
 
-yarn lint-staged
+yarn git-branch-is -r "^((?!main|master).)*$"
+npx lint-staged -c .lintstagedrc.json

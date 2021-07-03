@@ -11,12 +11,6 @@ export interface LogInCredentials {
 
 export interface BaseIQOptionProvider {
   logIn(credentials: LogInCredentials): Promise<BaseIQOptionAccount>
-  getCandles(
-    active: number,
-    interval: string | number,
-    amount: number,
-    endtime: number
-  ): Promise<Candle[]>
 }
 
 export interface PlaceDigitalOption {
@@ -52,6 +46,12 @@ export interface BaseIQOptionAccount {
   placeDigitalOption(data: PlaceDigitalOption): Promise<Position>
   openBinaryOption(data: OpenBinaryOption): Promise<Position>
   getPosition(positionId: string): Promise<Position>
+  getCandles(
+    active: Active,
+    timePeriod: ExpirationPeriod,
+    count: number,
+    toDate?: Date | number
+  ): Promise<Candle[]>
 }
 
 export interface WebSocketEvent<Message = any> {
@@ -290,29 +290,6 @@ export interface Candle {
   open: number
   to: number
   volume: number
-}
-
-export const CandleInterval = {
-  '1S': 1,
-  '5S': 5,
-  '10S': 10,
-  '15S': 15,
-  '30S': 30,
-  '1M': 60,
-  '2M': 120,
-  '5M': 300,
-  '10M': 600,
-  '15M': 900,
-  '30M': 1800,
-  '1H': 3600,
-  '2H': 7200,
-  '4H': 14400,
-  '8H': 28800,
-  '12H': 43200,
-  '1D': 86400,
-  '1W': 604800,
-  '1MO': 2592000,
-  ALL: 'all',
 }
 
 export type DigitalOptionExpirationPeriod = 'm1' | 'm5' | 'm15'
