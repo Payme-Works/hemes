@@ -46,6 +46,12 @@ export interface BaseIQOptionAccount {
   placeDigitalOption(data: PlaceDigitalOption): Promise<Position>
   openBinaryOption(data: OpenBinaryOption): Promise<Position>
   getPosition(positionId: string): Promise<Position>
+  getCandles(
+    active: Active,
+    timePeriod: ExpirationPeriod,
+    count: number,
+    toDate?: Date | number
+  ): Promise<Candle[]>
 }
 
 export interface WebSocketEvent<Message = any> {
@@ -268,6 +274,23 @@ export const allInstrumentTypes: InstrumentType[] = [
   'forex',
   'crypto',
 ]
+
+export interface CandleData {
+  open_at: number
+  close_at: number
+  direction: 'equal' | 'up' | 'down'
+}
+
+export interface Candle {
+  close: number
+  from: number
+  id: number
+  max: number
+  min: number
+  open: number
+  to: number
+  volume: number
+}
 
 export type DigitalOptionExpirationPeriod = 'm1' | 'm5' | 'm15'
 
