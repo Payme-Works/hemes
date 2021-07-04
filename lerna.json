@@ -8,7 +8,7 @@
     "version": {
       "exact": true,
       "conventionalCommits": true,
-      "message": "chore(release): Publish %s"
+      "message": "chore(release): Publish"
     },
     "publish": {
       "npmClient": "npm",
