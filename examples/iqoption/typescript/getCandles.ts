@@ -1,10 +1,7 @@
-import { Hemes } from '@hemes/core'
-import {
-  BaseIQOptionProvider,
-  CandleInterval,
-  IQOptionProvider,
-} from '@hemes/iqoption'
 import '../../loadEnv'
+
+import { Hemes } from '@hemes/core'
+import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
   const hemes = new Hemes(IQOptionProvider).getProvider<BaseIQOptionProvider>()
@@ -14,15 +11,15 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  const candles = await hemes.getCandles(
-    6,
-    CandleInterval['1S'],
-    10,
-    Date.now()
-  )
+  const candles = await account.getCandles('EURUSD-OTC', 'm15', 2)
 
-  console.log('Account', !!account)
-  console.log('\n', 'Candles', candles, '\n')
+  const fixedCandlesTime = candles.map(candle => ({
+    ...candle,
+    open: Number(candle.open.toFixed(5)),
+    close: Number(candle.close.toFixed(5)),
+  }))
+
+  console.log('\n', 'Candles', fixedCandlesTime, '\n')
 }
 
 run()

@@ -1,16 +1,24 @@
+import { Active, ExpirationPeriod } from '../../../types'
+import { getActiveId } from '../../../utils/getActiveId'
+import { getExpirationPeriodTime } from '../../../utils/getExpirationPeriodTime'
 import { Request } from '../Request'
 
 interface GetCandlesMessage {
   name: 'get-candles'
   version: '2.0'
-  body: {}
+  body: {
+    active_id: number
+    size: number | string
+    to: number
+    count: number
+  }
 }
 
 interface GetCandlesRequestArgs {
-  active_id: number
-  interval: number | string
-  endtime: number
-  amount: number
+  active: Active
+  timePeriod: ExpirationPeriod
+  count: number
+  toDate: Date | number
 }
 
 export class GetCandlesRequest extends Request<
@@ -22,20 +30,32 @@ export class GetCandlesRequest extends Request<
   }
 
   public async build({
-    active_id,
-    interval,
-    endtime,
-    amount,
+    active,
+    timePeriod,
+    count,
+    toDate,
   }: GetCandlesRequestArgs): Promise<GetCandlesMessage> {
+    const activeId = getActiveId(active)
+
+    const candlesTimePeriod: number = getExpirationPeriodTime(
+      timePeriod,
+      'seconds'
+    )
+
+    let candlesUntilDate: number = toDate as number
+
+    if (toDate instanceof Date) {
+      candlesUntilDate = toDate.getTime()
+    }
+
     return {
       name: 'get-candles',
       version: '2.0',
       body: {
-        active_id: active_id,
-        size: interval,
-        to: endtime,
-        count: amount,
-        '': active_id,
+        active_id: activeId,
+        size: candlesTimePeriod,
+        count: count,
+        to: candlesUntilDate,
       },
     }
   }
