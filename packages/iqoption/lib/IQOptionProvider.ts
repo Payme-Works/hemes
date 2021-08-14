@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 
+import { cors } from '@base-sdk/core'
 import { sleep } from '@hemes/core'
 
 import { IQOptionAccount } from './IQOptionAccount'
@@ -20,12 +21,20 @@ export class IQOptionProvider implements BaseIQOptionProvider {
   private api: AxiosInstance
   private webSocket: WebSocketClient
 
+  private isCorsBypassEnabled: boolean
+
   constructor() {
     this.api = axios.create({
       baseURL: 'https://iqoption.com/api',
     })
 
     this.webSocket = new WebSocketClient()
+  }
+
+  public async enableCorsBypass(): Promise<void> {
+    this.isCorsBypassEnabled = true
+
+    cors.useAxiosCors(this.api)
   }
 
   public async logIn({
@@ -37,6 +46,10 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     const authApi = axios.create({
       baseURL: 'https://auth.iqoption.com/api/v2',
     })
+
+    if (this.isCorsBypassEnabled) {
+      cors.useAxiosCors(authApi)
+    }
 
     const response = await authApi.post<LoginResponse>('/login', {
       identifier: email,

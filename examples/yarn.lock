@@ -2,13 +2,13 @@
 # yarn lockfile v1
 
 
-"@hemes/core@../packages/core", "@hemes/core@0.0.1-next.2":
-  version "0.0.1-next.2"
+"@hemes/core@../packages/core", "@hemes/core@0.0.1-next.3":
+  version "0.0.1-next.3"
 
 "@hemes/iqoption@../packages/iqoption":
-  version "0.0.1-next.2"
+  version "0.0.1-next.3"
   dependencies:
-    "@hemes/core" "0.0.1-next.2"
+    "@hemes/core" "0.0.1-next.3"
     axios "^0.21.1"
     date-fns "^2.21.1"
     date-fns-timezone "^0.1.4"

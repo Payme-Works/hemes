@@ -10,6 +10,7 @@ export interface LogInCredentials {
 }
 
 export interface BaseIQOptionProvider {
+  enableCorsBypass(): Promise<void>
   logIn(credentials: LogInCredentials): Promise<BaseIQOptionAccount>
 }
 
@@ -258,21 +259,12 @@ export type BalanceMode = 'real' | 'practice'
 
 export type UnderlyingType = 'digital-option'
 
-export type InstrumentType =
-  | 'binary-option'
-  | 'turbo-option'
-  | 'digital-option'
-  | 'cfd'
-  | 'forex'
-  | 'crypto'
+export type InstrumentType = 'binary-option' | 'turbo-option' | 'digital-option'
 
 export const allInstrumentTypes: InstrumentType[] = [
   'binary-option',
   'turbo-option',
   'digital-option',
-  'cfd',
-  'forex',
-  'crypto',
 ]
 
 export interface CandleData {
