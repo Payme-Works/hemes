@@ -26,6 +26,7 @@ const mockIqOptionAccount = {
   placeDigitalOption: jest.fn(),
   openBinaryOption: jest.fn(),
   getPosition: jest.fn(),
+  getPositionState: jest.fn(),
   getCandles: jest.fn(),
 }
 
@@ -78,6 +79,10 @@ jest.mock('../lib/IQOptionAccount', () => ({
 
     getPosition(...args: any[]) {
       return mockIqOptionAccount.getPosition(...args)
+    }
+
+    getPositionState(...args: any[]) {
+      return mockIqOptionAccount.getPositionState(...args)
     }
 
     getCandles(...args: any[]) {

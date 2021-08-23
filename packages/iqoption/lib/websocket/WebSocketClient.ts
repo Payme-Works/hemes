@@ -103,12 +103,22 @@ export class WebSocketClient implements BaseWebSocketClient {
   ): Promise<WebSocketEventHistory<Message> | undefined> {
     const response = new Response()
 
-    const reversedHistory = this.history.reverse()
+    console.log('⏰', response.name)
 
     return new Promise(async resolve => {
       let attempts = 0
 
-      while (attempts < (options?.maxAttempts || 10)) {
+      const initialTimeMillis = Date.now()
+
+      while (Date.now() - initialTimeMillis <= (options?.timeout ?? 5000)) {
+        if (attempts > 0) {
+          await sleep(options?.delay || 100)
+        }
+
+        attempts += 1
+
+        const reversedHistory = this.history.reverse()
+
         const findEvent = reversedHistory.find(event => {
           let result = true
 
@@ -123,18 +133,14 @@ export class WebSocketClient implements BaseWebSocketClient {
           const responseTestPassed = response.test(findEvent)
 
           if (!responseTestPassed) {
-            resolve(undefined)
-
-            return
+            continue
           }
 
           if (options?.test) {
             const optionsTestPassed = options.test(findEvent)
 
             if (!optionsTestPassed) {
-              resolve(undefined)
-
-              return
+              continue
             }
           }
 
@@ -142,10 +148,6 @@ export class WebSocketClient implements BaseWebSocketClient {
 
           return
         }
-
-        attempts += 1
-
-        await sleep(options?.delay || 500)
       }
 
       resolve(undefined)

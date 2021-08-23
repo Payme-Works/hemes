@@ -1,6 +1,6 @@
 import '../../loadEnv'
 
-import { Hemes } from '@hemes/core'
+import { Hemes, sleep } from '@hemes/core'
 import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
@@ -11,14 +11,18 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  const position = await account.openBinaryOption({
+  const placedPosition = await account.placeDigitalOption({
     active: 'EURUSD',
     direction: 'call',
     expiration_period: 'm1',
     price: 1,
   })
 
-  console.log('\n', 'Position:', JSON.stringify(position), '\n')
+  await sleep(10000)
+
+  const position = await account.getPositionState(placedPosition.id)
+
+  console.log('\n', 'Position state:', JSON.stringify(position), '\n')
 }
 
 run()

@@ -3,14 +3,14 @@ import { formatToTimeZone } from 'date-fns-timezone'
 import {
   Active,
   DigitalOptionExpirationPeriod,
-  OrderDirection,
+  PositionDirection,
 } from '../../../../types'
 import { getExpirationDate } from '../../../../utils/getExpirationDate'
 import { getExpirationPeriodTime } from '../../../../utils/getExpirationPeriodTime'
 import { Request } from '../../Request'
 
-type AbbreviatedOrderDirection = {
-  [direction in OrderDirection]: string
+type AbbreviatedPositionDirection = {
+  [direction in PositionDirection]: string
 }
 
 interface PlaceDigitalOptionRequestMessage {
@@ -26,12 +26,12 @@ interface PlaceDigitalOptionRequestMessage {
 interface PlaceDigitalOptionRequestArgs {
   user_balance_id: number
   active: Active
-  direction: OrderDirection
+  direction: PositionDirection
   expiration_period: DigitalOptionExpirationPeriod
   price: number
 }
 
-const abbreviatedOrderDirection: AbbreviatedOrderDirection = {
+const abbreviatedPositionDirection: AbbreviatedPositionDirection = {
   call: 'C',
   put: 'P',
 }
@@ -39,7 +39,7 @@ const abbreviatedOrderDirection: AbbreviatedOrderDirection = {
 function buildDigitalOptionIdentifier(
   active: Active,
   expirationPeriod: DigitalOptionExpirationPeriod,
-  direction: OrderDirection
+  direction: PositionDirection
 ) {
   const expirationDate = getExpirationDate(expirationPeriod, true)
 
@@ -63,7 +63,7 @@ function buildDigitalOptionIdentifier(
     'PT' +
     expirationPeriodTime +
     'M' +
-    abbreviatedOrderDirection[direction] +
+    abbreviatedPositionDirection[direction] +
     'SPT'
 
   return digitalOptionIdentifier

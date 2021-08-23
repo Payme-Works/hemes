@@ -19,6 +19,8 @@ export * from './utils/getExpirationDate'
 
 export * from './utils/getFixedTimestamp'
 
+export * from './utils/getPositionResult'
+
 /**
  * Types
  */

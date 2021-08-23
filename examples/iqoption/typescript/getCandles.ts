@@ -11,7 +11,7 @@ async function run() {
     password: String(process.env.TEST_IQOPTION_ACCOUNT_PASSWORD),
   })
 
-  const candles = await account.getCandles('EURUSD-OTC', 'm15', 2)
+  const candles = await account.getCandles('EURUSD-OTC', 'm5', 2)
 
   const fixedCandlesTime = candles.map(candle => ({
     ...candle,

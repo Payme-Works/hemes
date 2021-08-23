@@ -1,4 +1,9 @@
+import { InstrumentType, PositionDirection } from '../../../types'
 import { Response } from '../Response'
+
+export type PositionStatus = 'open' | 'closed' | string
+
+export type PositionCloseReason = 'win' | 'loose' | 'expired'
 
 export interface Position {
   version: number
@@ -10,10 +15,15 @@ export interface Position {
   active_id: number
   instrument_id: string
   source: string
-  instrument_type: string
-  status: string
+  instrument_type: InstrumentType
+  status: PositionStatus
   open_time: number
   open_quote: number
+  close_reason?: PositionCloseReason
+  close_quote?: number
+  close_profit?: number
+  close_profit_enrolled?: number
+  close_time?: number
   invest: number
   invest_enrolled: number
   sell_profit: number
@@ -22,6 +32,7 @@ export interface Position {
   expected_profit_enrolled: number
   pnl: number
   pnl_net: number
+  pnl_realized?: number
   current_price: number
   quote_timestamp: number
   swap: number
@@ -39,7 +50,7 @@ export interface Position {
     currency: string
     leverage: number
     create_at: number
-    order_ids: number[]
+    order_ids?: number[]
     update_at: number
     buy_amount: number
     commission: number
@@ -62,7 +73,6 @@ export interface Position {
     margin_call: number
     sell_amount: number
     close_reason: any
-    pnl_realized: number
     buy_avg_price: number
     currency_rate: number
     currency_unit: number
@@ -70,7 +80,8 @@ export interface Position {
     swap_enrolled: number
     user_group_id: number
     count_realized: number
-    instrument_dir: string
+    instrument_dir?: PositionDirection
+    direction?: PositionDirection
     sell_avg_price: number
     instrument_type: string
     user_balance_id: number
@@ -87,7 +98,8 @@ export interface Position {
     margin_call_enrolled: number
     sell_amount_enrolled: number
     take_profit_order_id: any
-    instrument_expiration: number
+    expiration_time?: number
+    instrument_expiration?: number
     instrument_underlying: string
     open_underlying_price: number
     pnl_realized_enrolled: number

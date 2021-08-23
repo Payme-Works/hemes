@@ -4,9 +4,8 @@
   "license": "MIT",
   "scripts": {
     "update": "cd .. && yarn --force && yarn build && cd examples && yarn --force",
-    "prestart": "yarn update",
-    "start": "yarn ts-node",
-    "start-noupdate": "yarn ts-node"
+    "start:update": "yarn update && yarn ts-node",
+    "start": "yarn ts-node"
   },
   "dependencies": {
     "@hemes/core": "../packages/core",
