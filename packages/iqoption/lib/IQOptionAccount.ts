@@ -334,6 +334,10 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       throw new Error('Cannot find placed digital option')
     }
 
+    if (placedDigitalOption.msg.message === 'active_suspended') {
+      throw new Error('Could not place digital option, active is suspended')
+    }
+
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {

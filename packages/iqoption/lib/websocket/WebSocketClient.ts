@@ -40,7 +40,7 @@ export class WebSocketClient implements BaseWebSocketClient {
         at: Date.now(),
       })
 
-      if (!['heartbeat', 'timeSync'].includes(event.name)) {
+      if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
         console.log('⬇ ', JSON.stringify(event))
       }
 
@@ -85,7 +85,7 @@ export class WebSocketClient implements BaseWebSocketClient {
     try {
       this.webSocket.send(JSON.stringify(event))
 
-      if (!['heartbeat', 'timeSync'].includes(event.name)) {
+      if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
         console.log('⬆ ', JSON.stringify(event))
       }
     } catch (err) {
