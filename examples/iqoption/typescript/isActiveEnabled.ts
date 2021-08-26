@@ -12,8 +12,9 @@ async function run() {
   })
 
   const isEnabled = await account.isActiveEnabled(
-    'USDJPY-OTC',
-    'digital-option'
+    'USDJPY',
+    'binary-option',
+    'm5'
   )
 
   console.log('\n', 'Is active enabled:', isEnabled, '\n')

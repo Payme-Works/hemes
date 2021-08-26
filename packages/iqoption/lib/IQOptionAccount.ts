@@ -160,7 +160,11 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     ) {
       let instrument: 'binary' | 'turbo' = 'binary'
 
-      if (expirationPeriod[0] === 'm1' || instrumentType === 'turbo-option') {
+      if (
+        expirationPeriod[0] === 'm1' ||
+        expirationPeriod[0] === 'm5' ||
+        instrumentType === 'turbo-option'
+      ) {
         instrument = 'turbo'
       }
 
@@ -215,7 +219,11 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     ) {
       let instrument: 'binary' | 'turbo' = 'binary'
 
-      if (expirationPeriod[0] === 'm1' || instrumentType === 'turbo-option') {
+      if (
+        expirationPeriod[0] === 'm1' ||
+        expirationPeriod[0] === 'm5' ||
+        instrumentType === 'turbo-option'
+      ) {
         instrument = 'turbo'
       }
 
@@ -341,6 +349,7 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {
+        timeout: 10000,
         test: event =>
           event.msg.raw_event.order_ids?.includes(placedDigitalOption.msg.id) ||
           false,
@@ -348,7 +357,9 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!changedPosition) {
-      throw new Error('Cannot find changed position')
+      throw new Error(
+        'Cannot find changed position while placing digital option'
+      )
     }
 
     this.subscribePositionState(changedPosition.msg)
@@ -385,12 +396,19 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {
-        test: event => event.msg.external_id === option.msg.id,
+        timeout: 10000,
+        test: event => {
+          console.log(event.msg.external_id, option.msg.id)
+
+          return event.msg.external_id === option.msg.id
+        },
       }
     )
 
     if (!changedPosition) {
-      throw new Error('Cannot find changed position')
+      throw new Error(
+        'Cannot find changed position while opening binary option'
+      )
     }
 
     this.subscribePositionState(changedPosition.msg)

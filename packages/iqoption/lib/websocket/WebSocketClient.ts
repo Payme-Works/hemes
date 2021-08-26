@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import md5 from 'md5'
 import WebSocket from 'ws'
 
@@ -41,7 +42,11 @@ export class WebSocketClient implements BaseWebSocketClient {
       })
 
       if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
-        console.log('⬇ ', JSON.stringify(event))
+        console.log(
+          '⬇',
+          format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
+          JSON.stringify(event)
+        )
       }
 
       const eventHandler = this.subscribers.find(
@@ -86,7 +91,11 @@ export class WebSocketClient implements BaseWebSocketClient {
       this.webSocket.send(JSON.stringify(event))
 
       if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
-        console.log('⬆ ', JSON.stringify(event))
+        console.log(
+          '⬆',
+          format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
+          JSON.stringify(event)
+        )
       }
     } catch (err) {
       console.error(err)
@@ -103,7 +112,11 @@ export class WebSocketClient implements BaseWebSocketClient {
   ): Promise<WebSocketEventHistory<Message> | undefined> {
     const response = new Response()
 
-    console.log('⏰', response.name)
+    console.log(
+      '⏰',
+      format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
+      response.name
+    )
 
     return new Promise(async resolve => {
       let attempts = 0

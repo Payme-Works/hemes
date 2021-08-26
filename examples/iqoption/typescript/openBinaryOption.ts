@@ -12,9 +12,9 @@ async function run() {
   })
 
   const position = await account.openBinaryOption({
-    active: 'EURUSD',
+    active: 'EURUSD-OTC',
     direction: 'call',
-    expiration_period: 'm1',
+    expiration_period: 'm5',
     price: 1,
   })
 

@@ -34,7 +34,7 @@ export function getExpirationDate(
 
   let expirationDate = set(now, { seconds: 0, milliseconds: 0 })
 
-  if (addMinutes(expirationDate, 1).getTime() - Date.now() > 30) {
+  if ((addMinutes(expirationDate, 1).getTime() - Date.now()) / 1000 > 30) {
     expirationDate = addMinutes(expirationDate, 1)
   } else {
     expirationDate = addMinutes(expirationDate, 2)
