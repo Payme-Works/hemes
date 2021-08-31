@@ -296,8 +296,11 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     setTimeout(async () => {
       clearInterval(subscribePositionInterval)
 
+      console.log('subscribePositionState', position.id)
+
       const closedPosition = await this.getPosition(position.id, {
         status: 'closed',
+        timeout: 10000,
       })
 
       const openPositionIdIndex = this.openPositionsIds.indexOf(
@@ -393,12 +396,24 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       throw new Error('Cannot find option')
     }
 
+    if (
+      option.msg.message ===
+      'Asset is currently unavailable. Please try again in a few minutes.'
+    ) {
+      throw new Error('Could not open binary option, active is unavailable')
+    }
+
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {
         timeout: 10000,
         test: event => {
-          console.log(event.msg.external_id, option.msg.id)
+          console.log(
+            'openBinaryOption',
+            event.msg.external_id,
+            option.msg.id,
+            new Date().toISOString()
+          )
 
           return event.msg.external_id === option.msg.id
         },
@@ -407,7 +422,8 @@ export class IQOptionAccount implements BaseIQOptionAccount {
 
     if (!changedPosition) {
       throw new Error(
-        'Cannot find changed position while opening binary option'
+        'Cannot find changed position while opening binary option ' +
+          new Date().toISOString()
       )
     }
 
@@ -420,11 +436,24 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     positionId: string,
     options?: GetPositionOptions
   ): Promise<Position> {
+    const logId = Math.random()
+
+    console.log(logId)
+
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {
         timeout: options?.timeout,
         test: event => {
+          console.log(
+            'getPosition',
+            event.msg.id,
+            positionId,
+            event.msg.status,
+            options?.status,
+            new Date().toISOString()
+          )
+
           if (options?.status && event.msg.status !== options.status) {
             return false
           }
@@ -435,7 +464,9 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!changedPosition) {
-      throw new Error('Cannot find changed position')
+      throw new Error(
+        logId + ' Cannot find changed position ' + new Date().toISOString()
+      )
     }
 
     return changedPosition.msg

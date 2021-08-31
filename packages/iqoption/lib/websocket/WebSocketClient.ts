@@ -115,15 +115,16 @@ export class WebSocketClient implements BaseWebSocketClient {
     console.log(
       '⏰',
       format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
+      options?.timeout ?? 5000,
       response.name
     )
 
     return new Promise(async resolve => {
+      const maxAttempts = (options?.timeout ?? 5000) / (options?.delay || 100)
+
       let attempts = 0
 
-      const initialTimeMillis = Date.now()
-
-      while (Date.now() - initialTimeMillis <= (options?.timeout ?? 5000)) {
+      while (attempts < maxAttempts) {
         if (attempts > 0) {
           await sleep(options?.delay || 100)
         }
@@ -132,31 +133,47 @@ export class WebSocketClient implements BaseWebSocketClient {
 
         const reversedHistory = this.history.reverse()
 
-        const findEvent = reversedHistory.find(event => {
-          let result = true
+        if (response.name === 'position-changed') {
+          console.log(
+            'position-changed history',
+            reversedHistory
+              .filter(item => !!item.msg.id && !!item.msg.status)
+              .map(item => ({
+                id: item.msg.id,
+                status: item.msg.status,
+              }))
+          )
+        } else {
+          console.log('history', reversedHistory)
+        }
 
-          if (options?.requestId) {
-            result = options?.requestId === event.request_id
+        const findEvent = reversedHistory.find(event => {
+          if (event.name !== response.name) {
+            return false
           }
 
-          return event.name === response.name && result
-        }) as WebSocketEventHistory<Message>
+          if (options?.requestId && options?.requestId !== event.request_id) {
+            return false
+          }
 
-        if (findEvent) {
-          const responseTestPassed = response.test(findEvent)
+          const responseTestPassed = response.test(event)
 
           if (!responseTestPassed) {
-            continue
+            return false
           }
 
           if (options?.test) {
-            const optionsTestPassed = options.test(findEvent)
+            const optionsTestPassed = options.test(event)
 
             if (!optionsTestPassed) {
-              continue
+              return false
             }
           }
 
+          return true
+        }) as WebSocketEventHistory<Message>
+
+        if (findEvent) {
           resolve(findEvent)
 
           return
