@@ -7,7 +7,7 @@ interface Prices {
   close: number
 }
 
-export function getPositionResult(
+export function getCandleResult(
   instrumentType: InstrumentType,
   direction: PositionDirection,
   prices: Prices

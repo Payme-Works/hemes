@@ -19,7 +19,7 @@ export * from './utils/getExpirationDate'
 
 export * from './utils/getFixedTimestamp'
 
-export * from './utils/getPositionResult'
+export * from './utils/getCandleResult'
 
 /**
  * Types

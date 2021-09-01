@@ -133,19 +133,7 @@ export class WebSocketClient implements BaseWebSocketClient {
 
         const reversedHistory = this.history.reverse()
 
-        if (response.name === 'position-changed') {
-          console.log(
-            'position-changed history',
-            reversedHistory
-              .filter(item => !!item.msg.id && !!item.msg.status)
-              .map(item => ({
-                id: item.msg.id,
-                status: item.msg.status,
-              }))
-          )
-        } else {
-          console.log('history', reversedHistory)
-        }
+        //   console.log('history', reversedHistory)
 
         const findEvent = reversedHistory.find(event => {
           if (event.name !== response.name) {

@@ -296,8 +296,6 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     setTimeout(async () => {
       clearInterval(subscribePositionInterval)
 
-      console.log('subscribePositionState', position.id)
-
       const closedPosition = await this.getPosition(position.id, {
         status: 'closed',
         timeout: 10000,
@@ -407,16 +405,7 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       PositionChangedResponse,
       {
         timeout: 10000,
-        test: event => {
-          console.log(
-            'openBinaryOption',
-            event.msg.external_id,
-            option.msg.id,
-            new Date().toISOString()
-          )
-
-          return event.msg.external_id === option.msg.id
-        },
+        test: event => event.msg.external_id === option.msg.id,
       }
     )
 
@@ -436,24 +425,11 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     positionId: string,
     options?: GetPositionOptions
   ): Promise<Position> {
-    const logId = Math.random()
-
-    console.log(logId)
-
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {
         timeout: options?.timeout,
         test: event => {
-          console.log(
-            'getPosition',
-            event.msg.id,
-            positionId,
-            event.msg.status,
-            options?.status,
-            new Date().toISOString()
-          )
-
           if (options?.status && event.msg.status !== options.status) {
             return false
           }
@@ -464,9 +440,7 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!changedPosition) {
-      throw new Error(
-        logId + ' Cannot find changed position ' + new Date().toISOString()
-      )
+      throw new Error('Cannot find changed position')
     }
 
     return changedPosition.msg
