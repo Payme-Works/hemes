@@ -14,7 +14,7 @@ async function run() {
   const position = await account.placeDigitalOption({
     active: 'EURUSD',
     direction: 'call',
-    expiration_period: 'm15',
+    expiration_period: 'm1',
     price: 1,
   })
 

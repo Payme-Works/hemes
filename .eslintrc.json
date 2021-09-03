@@ -28,6 +28,8 @@
   ],
   "rules": {
     "prettier/prettier": "error",
+    "curly": ["error", "all"],
+    "newline-before-return": "error",
     "camelcase": "off",
     "no-useless-constructor": "off",
     "no-async-promise-executor": "off",

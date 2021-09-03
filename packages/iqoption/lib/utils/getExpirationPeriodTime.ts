@@ -1,6 +1,6 @@
 import { ExpirationPeriod } from '../types'
 
-type Time = 'seconds' | 'minutes' | 'hours'
+type Time = 'milliseconds' | 'seconds' | 'minutes' | 'hours'
 
 type ExpirationPeriodsTime = {
   [keyIgnored in ExpirationPeriod]: number
@@ -20,7 +20,9 @@ export function getExpirationPeriodTime(
 ): number {
   const seconds = expirationPeriodsTimes[expirationPeriod]
 
-  if (time === 'minutes') {
+  if (time === 'milliseconds') {
+    return seconds * 1000
+  } else if (time === 'minutes') {
     return seconds / 60
   } else if (time === 'hours') {
     return seconds / 3600

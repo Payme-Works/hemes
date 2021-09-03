@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import md5 from 'md5'
 import WebSocket from 'ws'
 
@@ -40,8 +41,12 @@ export class WebSocketClient implements BaseWebSocketClient {
         at: Date.now(),
       })
 
-      if (!['heartbeat', 'timeSync'].includes(event.name)) {
-        console.log('⬇ ', JSON.stringify(event))
+      if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
+        console.log(
+          '⬇',
+          format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
+          JSON.stringify(event)
+        )
       }
 
       const eventHandler = this.subscribers.find(
@@ -71,6 +76,8 @@ export class WebSocketClient implements BaseWebSocketClient {
     while (this.webSocket.readyState !== 1) {
       console.log('Waiting socket to connect to send message...')
 
+      this.subscribe()
+
       await sleep(50)
     }
 
@@ -85,8 +92,12 @@ export class WebSocketClient implements BaseWebSocketClient {
     try {
       this.webSocket.send(JSON.stringify(event))
 
-      if (!['heartbeat', 'timeSync'].includes(event.name)) {
-        console.log('⬆ ', JSON.stringify(event))
+      if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
+        console.log(
+          '⬆',
+          format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
+          JSON.stringify(event)
+        )
       }
     } catch (err) {
       console.error(err)
@@ -103,49 +114,60 @@ export class WebSocketClient implements BaseWebSocketClient {
   ): Promise<WebSocketEventHistory<Message> | undefined> {
     const response = new Response()
 
-    const reversedHistory = this.history.reverse()
+    console.log(
+      '⏰',
+      format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
+      options?.timeout ?? 5000,
+      response.name
+    )
 
     return new Promise(async resolve => {
+      const maxAttempts = (options?.timeout ?? 5000) / (options?.delay || 100)
+
       let attempts = 0
 
-      while (attempts < (options?.maxAttempts || 10)) {
-        const findEvent = reversedHistory.find(event => {
-          let result = true
-
-          if (options?.requestId) {
-            result = options?.requestId === event.request_id
-          }
-
-          return event.name === response.name && result
-        }) as WebSocketEventHistory<Message>
-
-        if (findEvent) {
-          const responseTestPassed = response.test(findEvent)
-
-          if (!responseTestPassed) {
-            resolve(undefined)
-
-            return
-          }
-
-          if (options?.test) {
-            const optionsTestPassed = options.test(findEvent)
-
-            if (!optionsTestPassed) {
-              resolve(undefined)
-
-              return
-            }
-          }
-
-          resolve(findEvent)
-
-          return
+      while (attempts < maxAttempts) {
+        if (attempts > 0) {
+          await sleep(options?.delay || 100)
         }
 
         attempts += 1
 
-        await sleep(options?.delay || 500)
+        const reversedHistory = this.history.reverse()
+
+        //   console.log('history', reversedHistory)
+
+        const findEvent = reversedHistory.find(event => {
+          if (event.name !== response.name) {
+            return false
+          }
+
+          if (options?.requestId && options?.requestId !== event.request_id) {
+            return false
+          }
+
+          const responseTestPassed = response.test(event)
+
+          if (!responseTestPassed) {
+            return false
+          }
+
+          if (options?.test) {
+            const optionsTestPassed = options.test(event)
+
+            if (!optionsTestPassed) {
+              return false
+            }
+          }
+
+          return true
+        }) as WebSocketEventHistory<Message>
+
+        if (findEvent) {
+          resolve(findEvent)
+
+          return
+        }
       }
 
       resolve(undefined)

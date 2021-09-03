@@ -7,6 +7,7 @@ import {
   BaseIQOptionAccount,
   Candle,
   ExpirationPeriod,
+  GetPositionOptions,
   InstrumentType,
   OpenBinaryOption,
   PlaceDigitalOption,
@@ -23,6 +24,8 @@ import { GetProfileRequest } from './websocket/events/requests/GetProfile'
 import { GetTopAssetsRequest } from './websocket/events/requests/GetTopAssets'
 import { GetUnderlyingListRequest } from './websocket/events/requests/GetUnderlyingList'
 import { SubscribePortfolioPositionChanged } from './websocket/events/requests/SubscribePortfolioPositionChanged'
+import { SubscribePositions } from './websocket/events/requests/SubscribePositions'
+import { SubscribePositionsState } from './websocket/events/requests/SubscribePositionsState'
 import { UnsubscribePortfolioPositionChanged } from './websocket/events/requests/UnsubscribePortfolioPositionChanged'
 import { OptionResponse } from './websocket/events/responses/binary-options/Option'
 import { DigitalOptionPlacedResponse } from './websocket/events/responses/digital-options/DigitalOptionPlaced'
@@ -42,12 +45,16 @@ import {
   Position,
   PositionChangedResponse,
 } from './websocket/events/responses/PositionChanged'
+import {
+  PositionsStateResponse,
+  PositionState,
+} from './websocket/events/responses/PositionsState'
 import { WebSocketClient } from './websocket/WebSocketClient'
 type BalanceTypeIds = {
   [type in BalanceMode]: number
 }
 
-const balanceTypeIds: BalanceTypeIds = {
+export const BALANCE_TYPE_IDS: BalanceTypeIds = {
   real: 1,
   practice: 4,
 }
@@ -55,7 +62,11 @@ const balanceTypeIds: BalanceTypeIds = {
 export class IQOptionAccount implements BaseIQOptionAccount {
   private activeBalance?: Balance
 
-  constructor(public api: AxiosInstance, public webSocket: WebSocketClient) {}
+  private openPositionsIds: string[]
+
+  constructor(public api: AxiosInstance, public webSocket: WebSocketClient) {
+    this.openPositionsIds = []
+  }
 
   public async getProfile(): Promise<Profile> {
     const profileRequest = await this.webSocket.send(GetProfileRequest)
@@ -99,12 +110,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
   public async setBalanceMode(mode: BalanceMode): Promise<void> {
     const profile = await this.getProfile()
 
-    if (this.activeBalance?.type === balanceTypeIds[mode]) {
+    if (this.activeBalance?.type === BALANCE_TYPE_IDS[mode]) {
       return
     }
 
     const findBalance = profile.balances.find(
-      balance => balance.type === balanceTypeIds[mode]
+      balance => balance.type === BALANCE_TYPE_IDS[mode]
     )
 
     if (!findBalance) {
@@ -132,6 +143,8 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     await Promise.all(subscribePortfolioPositionChangedForAllInstrumentTyeps)
+
+    this.webSocket.send(SubscribePositionsState)
   }
 
   public async getActiveProfit<Type extends InstrumentType>(
@@ -147,7 +160,11 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     ) {
       let instrument: 'binary' | 'turbo' = 'binary'
 
-      if (expirationPeriod[0] === 'm1' || instrumentType === 'turbo-option') {
+      if (
+        expirationPeriod[0] === 'm1' ||
+        expirationPeriod[0] === 'm5' ||
+        instrumentType === 'turbo-option'
+      ) {
         instrument = 'turbo'
       }
 
@@ -202,7 +219,11 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     ) {
       let instrument: 'binary' | 'turbo' = 'binary'
 
-      if (expirationPeriod[0] === 'm1' || instrumentType === 'turbo-option') {
+      if (
+        expirationPeriod[0] === 'm1' ||
+        expirationPeriod[0] === 'm5' ||
+        instrumentType === 'turbo-option'
+      ) {
         instrument = 'turbo'
       }
 
@@ -250,6 +271,46 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     return checkIsEnabled
   }
 
+  private async subscribePositionState(position: Position) {
+    this.openPositionsIds.push(position.id)
+
+    this.webSocket.send(SubscribePositions, {
+      positions_ids: this.openPositionsIds,
+    })
+
+    const subscribePositionInterval = setInterval(() => {
+      this.webSocket.send(SubscribePositions, {
+        positions_ids: this.openPositionsIds,
+      })
+    }, 60000)
+
+    const positionExpiration = Number(
+      position.raw_event.expiration_time ||
+        position.raw_event.instrument_expiration
+    )
+    const positionExpirationDate = getFixedTimestamp(positionExpiration)
+
+    const removePositionIdTimeoutMilliseconds =
+      positionExpirationDate - Date.now()
+
+    setTimeout(async () => {
+      clearInterval(subscribePositionInterval)
+
+      const closedPosition = await this.getPosition(position.id, {
+        status: 'closed',
+        timeout: 10000,
+      })
+
+      const openPositionIdIndex = this.openPositionsIds.indexOf(
+        closedPosition.id
+      )
+
+      if (openPositionIdIndex > -1) {
+        this.openPositionsIds.splice(openPositionIdIndex, 1)
+      }
+    }, removePositionIdTimeoutMilliseconds)
+  }
+
   public async placeDigitalOption({
     active,
     direction,
@@ -282,17 +343,27 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       throw new Error('Cannot find placed digital option')
     }
 
+    if (placedDigitalOption.msg.message === 'active_suspended') {
+      throw new Error('Could not place digital option, active is suspended')
+    }
+
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {
+        timeout: 10000,
         test: event =>
-          event.msg.raw_event.order_ids.includes(placedDigitalOption.msg.id),
+          event.msg.raw_event.order_ids?.includes(placedDigitalOption.msg.id) ||
+          false,
       }
     )
 
     if (!changedPosition) {
-      throw new Error('Cannot find changed position')
+      throw new Error(
+        'Cannot find changed position while placing digital option'
+      )
     }
+
+    this.subscribePositionState(changedPosition.msg)
 
     return changedPosition.msg
   }
@@ -323,25 +394,48 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       throw new Error('Cannot find option')
     }
 
+    if (
+      option.msg.message ===
+      'Asset is currently unavailable. Please try again in a few minutes.'
+    ) {
+      throw new Error('Could not open binary option, active is unavailable')
+    }
+
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {
+        timeout: 10000,
         test: event => event.msg.external_id === option.msg.id,
       }
     )
 
     if (!changedPosition) {
-      throw new Error('Cannot find changed position')
+      throw new Error(
+        'Cannot find changed position while opening binary option ' +
+          new Date().toISOString()
+      )
     }
+
+    this.subscribePositionState(changedPosition.msg)
 
     return changedPosition.msg
   }
 
-  public async getPosition(positionId: string): Promise<Position> {
+  public async getPosition(
+    positionId: string,
+    options?: GetPositionOptions
+  ): Promise<Position> {
     const changedPosition = await this.webSocket.waitFor(
       PositionChangedResponse,
       {
-        test: event => event.msg.id === positionId,
+        timeout: options?.timeout,
+        test: event => {
+          if (options?.status && event.msg.status !== options.status) {
+            return false
+          }
+
+          return event.msg.id === positionId
+        },
       }
     )
 
@@ -352,15 +446,42 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     return changedPosition.msg
   }
 
+  public async getPositionState(positionId: string): Promise<PositionState> {
+    const positionsState = await this.webSocket.waitFor(
+      PositionsStateResponse,
+      {
+        test: event => {
+          return event.msg.positions.some(
+            positionState => positionState.id === positionId
+          )
+        },
+      }
+    )
+
+    if (!positionsState) {
+      throw new Error('Cannot find any positions state')
+    }
+
+    const findPositionStateById = positionsState.msg.positions.find(
+      positionState => positionState.id === positionId
+    )
+
+    if (!findPositionStateById) {
+      throw new Error('Cannot find position state')
+    }
+
+    return findPositionStateById
+  }
+
   public async getCandles(
     active: Active,
-    timePeriod: ExpirationPeriod,
+    expirationPeriod: ExpirationPeriod,
     count: number,
     toDate?: Date | number
   ): Promise<Candle[]> {
     const getCandlesRequest = await this.webSocket.send(GetCandlesRequest, {
       active,
-      timePeriod,
+      timePeriod: expirationPeriod,
       count,
       toDate: toDate || Date.now(),
     })

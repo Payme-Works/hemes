@@ -12,19 +12,17 @@ async function run() {
   })
 
   const placedPosition = await account.placeDigitalOption({
-    active: 'EURUSD-OTC',
+    active: 'EURUSD',
     direction: 'call',
     expiration_period: 'm1',
     price: 1,
   })
 
-  await sleep(100000)
+  await sleep(10000)
 
-  const position = await account.getPosition(placedPosition.id, {
-    status: 'closed',
-  })
+  const position = await account.getPositionState(placedPosition.id)
 
-  console.log('\n', 'Position:', JSON.stringify(position), '\n')
+  console.log('\n', 'Position state:', JSON.stringify(position), '\n')
 }
 
 run()

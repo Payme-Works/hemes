@@ -4,16 +4,17 @@ This folder contains Hemes for IQ Option examples for different types of actions
 them were tested and may work properly. You can also customize them for your
 needs.
 
-| Name                    | Link                                                 |
-| ----------------------- | ---------------------------------------------------- |
-| Log in                  | [TypeScript](./typescript/logIn.tsx)                 |
-| Get initialization data | [TypeScript](./typescript/getInitializationData.tsx) |
-| Get profile             | [TypeScript](./typescript/getProfile.tsx)            |
-| Get underlying list     | [TypeScript](./typescript/getUnderlyingList.tsx)     |
-| Get instruments         | [TypeScript](./typescript/getInstruments.tsx)        |
-| Place digital option    | [TypeScript](./typescript/placeDigitalOption.tsx)    |
-| Open binary option      | [TypeScript](./typescript/openBinaryOption.tsx)      |
-| Get position            | [TypeScript](./typescript/getPosition.tsx)           |
+| Name                    | Link                                                |
+| ----------------------- | --------------------------------------------------- |
+| Log in                  | [TypeScript](./typescript/logIn.ts)                 |
+| Get initialization data | [TypeScript](./typescript/getInitializationData.ts) |
+| Get profile             | [TypeScript](./typescript/getProfile.ts)            |
+| Get underlying list     | [TypeScript](./typescript/getUnderlyingList.ts)     |
+| Get instruments         | [TypeScript](./typescript/getInstruments.ts)        |
+| Place digital option    | [TypeScript](./typescript/placeDigitalOption.ts)    |
+| Open binary option      | [TypeScript](./typescript/openBinaryOption.ts)      |
+| Get position            | [TypeScript](./typescript/getPosition.ts)           |
+| Get position state      | [TypeScript](./typescript/getPositionState.ts)      |
 
 ## Add an example
 

@@ -1,6 +1,6 @@
 import { Response } from '../Response'
 
-interface ProfileResult {
+export interface ProfileResult {
   account_status: string
   address: string
   auth_two_factor: any

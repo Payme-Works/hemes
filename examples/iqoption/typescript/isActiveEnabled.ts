@@ -12,9 +12,9 @@ async function run() {
   })
 
   const isEnabled = await account.isActiveEnabled(
-    'EURUSD',
+    'USDJPY',
     'binary-option',
-    'm1'
+    'm5'
   )
 
   console.log('\n', 'Is active enabled:', isEnabled, '\n')
