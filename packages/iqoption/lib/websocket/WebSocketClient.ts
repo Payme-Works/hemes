@@ -76,6 +76,8 @@ export class WebSocketClient implements BaseWebSocketClient {
     while (this.webSocket.readyState !== 1) {
       console.log('Waiting socket to connect to send message...')
 
+      this.subscribe()
+
       await sleep(50)
     }
 
