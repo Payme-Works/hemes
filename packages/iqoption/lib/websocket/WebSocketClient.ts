@@ -78,7 +78,7 @@ export class WebSocketClient implements BaseWebSocketClient {
 
       this.subscribe()
 
-      await sleep(2000)
+      await sleep(5000)
     }
 
     const message = await request.build(args as any)
