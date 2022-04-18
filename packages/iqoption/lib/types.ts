@@ -15,7 +15,7 @@ export interface LogInCredentials {
 }
 
 export interface BaseIQOptionProvider {
-  enableCorsBypass(): Promise<void>
+  enableCorsBypass(server: string): Promise<void>
   logIn(credentials: LogInCredentials): Promise<BaseIQOptionAccount>
 }
 
