@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios'
+import { format } from 'date-fns'
 
 import {
   Active,
@@ -78,7 +79,9 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     })
 
     if (!profile) {
-      throw new Error('Profile not found')
+      throw new Error(
+        `Profile not found [${format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS')}]`
+      )
     }
 
     const balances = await this.webSocket.waitFor(GetBalancesResponse, {
@@ -86,7 +89,9 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     })
 
     if (!balances) {
-      throw new Error('Cannot get balances')
+      throw new Error(
+        `Cannot get balances [${format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS')}]`
+      )
     }
 
     const findBalance = balances.msg.find(
@@ -95,7 +100,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!findBalance) {
-      throw new Error('Active balance not found')
+      throw new Error(
+        `Active balance not found [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     return {
@@ -119,7 +129,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!findBalance) {
-      throw new Error('Balance for mode not found')
+      throw new Error(
+        `Balance for mode not found [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     this.activeBalance = findBalance
@@ -177,7 +192,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       const activeInfo = initializationData?.msg[instrument].actives[activeId]
 
       if (!activeInfo) {
-        throw new Error('Active info not found')
+        throw new Error(
+          `Active info not found [${format(
+            Date.now(),
+            'yyyy-MM-dd HH:mm:ss:SSS'
+          )}]`
+        )
       }
 
       const commission = activeInfo.option.profit.commission
@@ -192,7 +212,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     const topAssets = await this.webSocket.waitFor(GetTopAssetsResponse)
 
     if (!topAssets) {
-      throw new Error('Top assets not found')
+      throw new Error(
+        `Top assets not found [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     const findAsset = topAssets.msg.data.find(
@@ -200,7 +225,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!findAsset) {
-      throw new Error('Active asset not found')
+      throw new Error(
+        `Active asset not found [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     return Math.round(findAsset.spot_profit.value)
@@ -236,7 +266,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
       const activeInfo = initializationData?.msg[instrument].actives[activeId]
 
       if (!activeInfo) {
-        throw new Error('Active info not found')
+        throw new Error(
+          `Active info not found [${format(
+            Date.now(),
+            'yyyy-MM-dd HH:mm:ss:SSS'
+          )}]`
+        )
       }
 
       if (activeInfo.enabled) {
@@ -259,7 +294,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!findAsset) {
-      throw new Error('Active asset not found')
+      throw new Error(
+        `Active asset not found [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     const checkIsEnabled = findAsset.schedule.some(
@@ -318,7 +358,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     price,
   }: PlaceDigitalOption): Promise<Position> {
     if (!this.activeBalance) {
-      throw new Error('Not found any active balance')
+      throw new Error(
+        `Not found any active balance [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     const placeDigitalOptionRequest = await this.webSocket.send(
@@ -340,11 +385,21 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!placedDigitalOption) {
-      throw new Error('Cannot find placed digital option')
+      throw new Error(
+        `Cannot find placed digital option [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     if (placedDigitalOption.msg.message === 'active_suspended') {
-      throw new Error('Could not place digital option, active is suspended')
+      throw new Error(
+        `Could not place digital option, active is suspended [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     const changedPosition = await this.webSocket.waitFor(
@@ -359,7 +414,10 @@ export class IQOptionAccount implements BaseIQOptionAccount {
 
     if (!changedPosition) {
       throw new Error(
-        'Cannot find changed position while placing digital option'
+        `Cannot find changed position while placing digital option [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
       )
     }
 
@@ -375,7 +433,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     price,
   }: OpenBinaryOption): Promise<Position> {
     if (!this.activeBalance) {
-      throw new Error('Not found any active balance')
+      throw new Error(
+        `Not found any active balance [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     const openOptionRequest = await this.webSocket.send(OpenOptionRequest, {
@@ -391,14 +454,21 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     })
 
     if (!option) {
-      throw new Error('Cannot find option')
+      throw new Error(
+        `Cannot find option [${format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS')}]`
+      )
     }
 
     if (
       option.msg.message ===
       'Asset is currently unavailable. Please try again in a few minutes.'
     ) {
-      throw new Error('Could not open binary option, active is unavailable')
+      throw new Error(
+        `Could not open binary option, active is unavailable [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     const changedPosition = await this.webSocket.waitFor(
@@ -411,8 +481,10 @@ export class IQOptionAccount implements BaseIQOptionAccount {
 
     if (!changedPosition) {
       throw new Error(
-        'Cannot find changed position while opening binary option ' +
-          new Date().toISOString()
+        `Cannot find changed position while opening binary option ' [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
       )
     }
 
@@ -440,7 +512,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!changedPosition) {
-      throw new Error('Cannot find changed position')
+      throw new Error(
+        `Cannot find changed position [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     return changedPosition.msg
@@ -459,7 +536,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!positionsState) {
-      throw new Error('Cannot find any positions state')
+      throw new Error(
+        `Cannot find any positions state [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     const findPositionStateById = positionsState.msg.positions.find(
@@ -467,7 +549,12 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!findPositionStateById) {
-      throw new Error('Cannot find position state')
+      throw new Error(
+        `Cannot find position state [${format(
+          Date.now(),
+          'yyyy-MM-dd HH:mm:ss:SSS'
+        )}]`
+      )
     }
 
     return findPositionStateById
@@ -494,7 +581,9 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     if (!getCandlesResponse) {
-      throw new Error('Candles not found')
+      throw new Error(
+        `Candles not found [${format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS')}]`
+      )
     }
 
     return getCandlesResponse.msg.candles
