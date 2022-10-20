@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<p align="center">Easy peasy highly scalable financial brokers communication! 💸</p>
+<p align="center">Easy peasy highly scalable binary options brokers communication! 💸</p>
 
 <div align="center">
 
@@ -15,7 +15,7 @@
 
 ## Overview
 
-Hemes is a performance-focused API for communicating with financial brokers. You can use to do a lot of things inside your broker.
+Hemes is a performance-focused API for communicating with binary options brokers. You can use to do a lot of things inside your broker.
 
 - **[Getting started](https://paymetrade.com)**
 - **[Installation](https://paymetrade.com)**
