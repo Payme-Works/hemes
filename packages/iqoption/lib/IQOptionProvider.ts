@@ -25,7 +25,7 @@ export class IQOptionProvider implements BaseIQOptionProvider {
 
   constructor() {
     this.api = axios.create({
-      baseURL: 'https://iqoption.com/api',
+      baseURL: 'https://trade.avalonbroker.io/api',
     })
 
     this.webSocket = new WebSocketClient()
@@ -41,10 +41,12 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     email,
     password,
   }: LogInCredentials): Promise<BaseIQOptionAccount> {
-    this.webSocket.subscribe()
+    console.log('Logging in...')
+
+    await this.webSocket.subscribe()
 
     const authApi = axios.create({
-      baseURL: 'https://auth.iqoption.com/api/v2',
+      baseURL: 'https://api.trade.avalonbroker.io/v2/',
     })
 
     if (this.isCorsBypassEnabled) {
@@ -55,6 +57,8 @@ export class IQOptionProvider implements BaseIQOptionProvider {
       identifier: email,
       password,
     })
+
+    console.log('Logged in')
 
     this.api.defaults.headers.Authorization = `SSID ${response.data.ssid}`
 

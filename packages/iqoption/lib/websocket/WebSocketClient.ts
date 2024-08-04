@@ -30,40 +30,48 @@ export class WebSocketClient implements BaseWebSocketClient {
     this.history = []
   }
 
-  public subscribe(): void {
-    this.webSocket = new WebSocket('wss://iqoption.com/echo/websocket')
+  public async subscribe(): Promise<void> {
+    return new Promise(resolve => {
+      this.webSocket = new WebSocket('wss://ws.trade.avalonbroker.io/echo/websocket')
 
-    this.webSocket.on('message', (originEvent: string) => {
-      const event = JSON.parse(originEvent) as WebSocketEvent
+      this.webSocket.on('open', () => {
+        console.log('WebSocket connected')
 
-      this.history.push({
-        ...event,
-        at: Date.now(),
+        resolve()
       })
 
-      if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
-        console.log(
-          '⬇',
-          format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
-          JSON.stringify(event)
+      this.webSocket.on('message', (originEvent: string) => {
+        const event = JSON.parse(originEvent) as WebSocketEvent
+
+        this.history.push({
+          ...event,
+          at: Date.now(),
+        })
+
+        if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
+          console.log(
+            '⬇',
+            format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
+            JSON.stringify(event)
+          )
+        }
+
+        const eventHandler = this.subscribers.find(
+          eventHandler => eventHandler.name === event.name
         )
-      }
 
-      const eventHandler = this.subscribers.find(
-        eventHandler => eventHandler.name === event.name
-      )
+        if (eventHandler) {
+          eventHandler.update(event)
+        }
+      })
 
-      if (eventHandler) {
-        eventHandler.update(event)
-      }
-    })
+      this.webSocket.on('error', (originEvent: string) => {
+        console.log('WebSocket error ->', originEvent)
+      })
 
-    this.webSocket.on('error', (originEvent: string) => {
-      console.log('WebSocket error ->', originEvent)
-    })
-
-    this.webSocket.on('close', (originEvent: string) => {
-      console.log('WebSocket closed ->', originEvent)
+      this.webSocket.on('close', (originEvent: string) => {
+        console.log('WebSocket closed ->', originEvent)
+      })
     })
   }
 
@@ -73,12 +81,12 @@ export class WebSocketClient implements BaseWebSocketClient {
   ): Promise<WebSocketEvent<Message>> {
     const request = new Request()
 
-    while (this.webSocket.readyState !== 1) {
+    while (this.webSocket.readyState !== WebSocket.OPEN && this.webSocket.readyState !== WebSocket.CONNECTING) {
       console.log('Waiting socket to connect to send message...')
 
-      this.subscribe()
+      await this.subscribe()
 
-      await sleep(50)
+      await sleep(100)
     }
 
     const message = await request.build(args as any)

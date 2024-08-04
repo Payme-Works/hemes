@@ -104,7 +104,7 @@ export interface WaitForOptions<Message> {
 export interface BaseWebSocketClient {
   history: WebSocketEventHistory[]
 
-  subscribe(): void
+  subscribe(): Promise<void>
 
   send<Message, Args = undefined>(
     Request: EventRequestConstructor<Message, Args>,

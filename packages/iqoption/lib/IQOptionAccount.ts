@@ -69,6 +69,8 @@ export class IQOptionAccount implements BaseIQOptionAccount {
   }
 
   public async getProfile(): Promise<Profile> {
+    console.log('Getting profile...')
+
     const profileRequest = await this.webSocket.send(GetProfileRequest)
 
     const balancesRequest = await this.webSocket.send(GetBalancesRequest)
