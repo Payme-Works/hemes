@@ -1,7 +1,7 @@
 import { formatToTimeZone } from 'date-fns-timezone'
 
 import {
-  Active,
+  ActivePair,
   DigitalOptionExpirationPeriod,
   PositionDirection,
 } from '../../../../types'
@@ -15,17 +15,19 @@ type AbbreviatedPositionDirection = {
 
 interface PlaceDigitalOptionRequestMessage {
   name: 'digital-options.place-digital-option'
-  version: '1.0'
+  version: '2.0'
   body: {
     user_balance_id: number
     instrument_id: string
     amount: string
+    instrument_index: number
+    asset_id: number
   }
 }
 
 interface PlaceDigitalOptionRequestArgs {
   user_balance_id: number
-  active: Active
+  active: ActivePair
   direction: PositionDirection
   expiration_period: DigitalOptionExpirationPeriod
   price: number
@@ -36,8 +38,16 @@ const abbreviatedPositionDirection: AbbreviatedPositionDirection = {
   put: 'P',
 }
 
+// do816A20240805D165000T5MCSPT
+// do1A20240805D165000T1MPSPT
+
+// do1A20240805D172500T5CSPT
+
+// doBITCOIN202408051650PT5MCSPT
+// doEURUSD202408051700PT5MCSPT
+
 function buildDigitalOptionIdentifier(
-  active: Active,
+  active: ActivePair,
   expirationPeriod: DigitalOptionExpirationPeriod,
   direction: PositionDirection
 ) {
@@ -59,12 +69,15 @@ function buildDigitalOptionIdentifier(
   const digitalOptionIdentifier =
     'do' +
     active +
-    expirationTimeFormatted +
-    'PT' +
+    'A' +
+    expirationTimeFormatted.substring(0, 8) + // dateFormat
+    'D' +
+    expirationTimeFormatted.substring(8, 12) + // timeFormat
+    '00T' +
     expirationPeriodTime +
-    'M' +
+    "M" +
     abbreviatedPositionDirection[direction] +
-    'SPT'
+    'SPT';
 
   return digitalOptionIdentifier
 }
@@ -92,11 +105,13 @@ export class PlaceDigitalOptionRequest extends Request<
 
     return {
       name: 'digital-options.place-digital-option',
-      version: '1.0',
+      version: '2.0',
       body: {
         user_balance_id,
         instrument_id: digitalOptionIdentifier,
         amount: String(price),
+        instrument_index: 797064,
+        asset_id: Number(active)
       },
     }
   }

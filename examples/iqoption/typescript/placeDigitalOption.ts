@@ -1,7 +1,7 @@
 import '../../loadEnv'
 
 import { Hemes } from '@hemes/core'
-import { IQOptionProvider, BaseIQOptionProvider } from '@hemes/iqoption'
+import { IQOptionProvider, BaseIQOptionProvider, ActivePair } from '@hemes/iqoption'
 
 async function run() {
   const hemes = new Hemes(IQOptionProvider).getProvider<BaseIQOptionProvider>()
@@ -12,10 +12,10 @@ async function run() {
   })
 
   const position = await account.placeDigitalOption({
-    active: 'EURUSD',
+    active: ActivePair.APPLE,
     direction: 'call',
-    expiration_period: 'm1',
-    price: 1,
+    expiration_period: 'm5',
+    price: 1000,
   })
 
   console.log('\n', 'Position:', JSON.stringify(position), '\n')

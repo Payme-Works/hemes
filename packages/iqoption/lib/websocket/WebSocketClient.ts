@@ -32,7 +32,7 @@ export class WebSocketClient implements BaseWebSocketClient {
 
   public async subscribe(): Promise<void> {
     return new Promise(resolve => {
-      this.webSocket = new WebSocket('wss://ws.trade.avalonbroker.io/echo/websocket')
+      this.webSocket = new WebSocket('wss://ws.trade.gomerebroker.com/echo/websocket')
 
       this.webSocket.on('open', () => {
         console.log('WebSocket connected')

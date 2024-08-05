@@ -25,7 +25,7 @@ export class IQOptionProvider implements BaseIQOptionProvider {
 
   constructor() {
     this.api = axios.create({
-      baseURL: 'https://trade.avalonbroker.io/api',
+      baseURL: 'https://trade.gomerebroker.com/api',
     })
 
     this.webSocket = new WebSocketClient()
@@ -46,7 +46,7 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     await this.webSocket.subscribe()
 
     const authApi = axios.create({
-      baseURL: 'https://api.trade.avalonbroker.io/v2/',
+      baseURL: 'https://api.trade.gomerebroker.com/v2/',
     })
 
     if (this.isCorsBypassEnabled) {
