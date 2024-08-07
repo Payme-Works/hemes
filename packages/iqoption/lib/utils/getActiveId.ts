@@ -4,7 +4,7 @@ type ActiveIds = {
   [keyIgnored in Active]: number
 }
 
-const activeIds: ActiveIds = {
+export const activeIds: ActiveIds = {
   EURUSD: 1,
   EURGBP: 2,
   GBPJPY: 3,
@@ -377,6 +377,7 @@ const activeIds: ActiveIds = {
   CAN: 1351,
   VIAC: 1352,
   TFC: 1353,
+  BTC: 1354,
 }
 
 export function getActiveId(active: Active): number {

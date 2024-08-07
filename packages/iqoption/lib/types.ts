@@ -38,6 +38,10 @@ export interface GetPositionOptions {
   timeout?: number
 }
 
+export type OpenAssets = {
+  [type in InstrumentType]: Active[]
+}
+
 export interface BaseIQOptionAccount {
   api: AxiosInstance
   webSocket: WebSocketClient
@@ -54,6 +58,7 @@ export interface BaseIQOptionAccount {
     instrumentType: Type,
     ...expirationPeriod: Type extends 'binary-option' ? [ExpirationPeriod] : []
   ): Promise<boolean>
+  getOpenAssets(): Promise<OpenAssets>
   placeDigitalOption(data: PlaceDigitalOption): Promise<Position>
   openBinaryOption(data: OpenBinaryOption): Promise<Position>
   getPosition(
@@ -553,7 +558,6 @@ export type Active =
   | 'TFC'
   | 'BTC'
 
-
 export enum ActivePair {
   ALL = 0,
   EURRUB = 9,
@@ -594,7 +598,6 @@ export enum ActivePair {
 
   PAN = 97,
 
-
   GBPCHF = 103,
   GBPAUD = 104,
 
@@ -615,7 +618,6 @@ export enum ActivePair {
 
   NTDOY = 218,
   USDTRY = 220,
-
 
   BTCUSD = 816,
   XRPUSD = 817,
@@ -641,8 +643,6 @@ export enum ActivePair {
   XEMUSD_L = 1120,
   TRXUSD_L = 1242,
   EOSUSD_L = 1244,
-
-
 
   EURUSD = 1,
   EURGBP = 2,
@@ -906,5 +906,5 @@ export enum ActivePair {
   WORK = 1343,
   FDJP = 1350,
   VIAC = 1352,
-  TFC = 13
+  TFC = 13,
 }

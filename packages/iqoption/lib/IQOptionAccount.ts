@@ -9,6 +9,7 @@ import {
   ExpirationPeriod,
   GetPositionOptions,
   InstrumentType,
+  OpenAssets,
   OpenBinaryOption,
   PlaceDigitalOption,
   Profile,
@@ -271,6 +272,69 @@ export class IQOptionAccount implements BaseIQOptionAccount {
     )
 
     return checkIsEnabled
+  }
+
+  /**
+ export type OpenAssets = {
+  [type in InstrumentType]: Active[]
+} */
+
+  public async getOpenAssets(): Promise<OpenAssets> {
+    const openAssets: OpenAssets = {
+      'binary-option': [],
+      'turbo-option': [],
+      'digital-option': [],
+    }
+
+    const isActiveOpen = (active: any) => {
+      return active.enabled && !active.is_suspended
+    }
+
+    await this.webSocket.send(GetInitializationDataRequest)
+
+    const initializationData = await this.webSocket.waitFor(
+      GetInitializationDataResponse
+    )
+
+    const binaryOptions = initializationData?.msg?.binary?.actives || {}
+    const turboOptions = initializationData?.msg?.turbo?.actives || {}
+
+    for (const id in binaryOptions) {
+      if (isActiveOpen(binaryOptions[id])) {
+        openAssets['binary-option'].push(binaryOptions[id].name as Active)
+      }
+    }
+
+    for (const id in turboOptions) {
+      if (isActiveOpen(turboOptions[id])) {
+        openAssets['turbo-option'].push(turboOptions[id].name as Active)
+      }
+    }
+
+    // Fetch the list of top assets to get other types of assets
+    await this.webSocket.send(GetUnderlyingListRequest, {
+      type: 'digital-option',
+    })
+
+    const underlyingList = await this.webSocket.waitFor(
+      GetUnderlyingListResponse
+    )
+
+    const digitalOptions = underlyingList?.msg.underlying || []
+
+    for (const asset of digitalOptions) {
+      if (
+        asset.schedule.some(
+          item =>
+            getFixedTimestamp(item.open) < Date.now() &&
+            getFixedTimestamp(item.close) > Date.now()
+        )
+      ) {
+        openAssets['digital-option'].push(asset.name as Active)
+      }
+    }
+
+    return openAssets
   }
 
   private async subscribePositionState(position: Position) {

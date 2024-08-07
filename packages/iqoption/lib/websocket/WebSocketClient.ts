@@ -32,7 +32,9 @@ export class WebSocketClient implements BaseWebSocketClient {
 
   public async subscribe(): Promise<void> {
     return new Promise(resolve => {
-      this.webSocket = new WebSocket('wss://ws.trade.gomerebroker.com/echo/websocket')
+      this.webSocket = new WebSocket(
+        'wss://ws.trade.gomerebroker.com/echo/websocket'
+      )
 
       this.webSocket.on('open', () => {
         console.log('WebSocket connected')
@@ -48,7 +50,9 @@ export class WebSocketClient implements BaseWebSocketClient {
           at: Date.now(),
         })
 
-        if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
+        if (
+          !['heartbeat', 'timeSync', 'positions-state'].includes(event.name)
+        ) {
           console.log(
             '⬇',
             format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),
@@ -81,7 +85,10 @@ export class WebSocketClient implements BaseWebSocketClient {
   ): Promise<WebSocketEvent<Message>> {
     const request = new Request()
 
-    while (this.webSocket.readyState !== WebSocket.OPEN && this.webSocket.readyState !== WebSocket.CONNECTING) {
+    while (
+      this.webSocket.readyState !== WebSocket.OPEN &&
+      this.webSocket.readyState !== WebSocket.CONNECTING
+    ) {
       console.log('Waiting socket to connect to send message...')
 
       await this.subscribe()

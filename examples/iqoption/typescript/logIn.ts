@@ -5,7 +5,9 @@ import { BaseIQOptionProvider, IQOptionProvider } from '@hemes/iqoption'
 
 async function run() {
   try {
-    const hemes = new Hemes(IQOptionProvider).getProvider<BaseIQOptionProvider>()
+    const hemes = new Hemes(
+      IQOptionProvider
+    ).getProvider<BaseIQOptionProvider>()
 
     await hemes.logIn({
       email: String(process.env.TEST_IQOPTION_ACCOUNT_EMAIL),

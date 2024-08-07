@@ -1,7 +1,11 @@
 import '../../loadEnv'
 
 import { Hemes } from '@hemes/core'
-import { IQOptionProvider, BaseIQOptionProvider, ActivePair } from '@hemes/iqoption'
+import {
+  IQOptionProvider,
+  BaseIQOptionProvider,
+  ActivePair,
+} from '@hemes/iqoption'
 
 async function run() {
   const hemes = new Hemes(IQOptionProvider).getProvider<BaseIQOptionProvider>()

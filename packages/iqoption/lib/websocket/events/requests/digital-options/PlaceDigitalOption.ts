@@ -75,9 +75,9 @@ function buildDigitalOptionIdentifier(
     expirationTimeFormatted.substring(8, 12) + // timeFormat
     '00T' +
     expirationPeriodTime +
-    "M" +
+    'M' +
     abbreviatedPositionDirection[direction] +
-    'SPT';
+    'SPT'
 
   return digitalOptionIdentifier
 }
@@ -111,7 +111,7 @@ export class PlaceDigitalOptionRequest extends Request<
         instrument_id: digitalOptionIdentifier,
         amount: String(price),
         instrument_index: 797064,
-        asset_id: Number(active)
+        asset_id: Number(active),
       },
     }
   }
