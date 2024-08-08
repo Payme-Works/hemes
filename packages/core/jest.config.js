@@ -1,6 +1,7 @@
 const path = require('path')
 
 const baseConfig = require('../../jest.config')
+
 const pkg = require('./package.json')
 
 delete baseConfig.projects
