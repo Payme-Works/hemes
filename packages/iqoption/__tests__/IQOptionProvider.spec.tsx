@@ -23,6 +23,7 @@ const mockIqOptionAccount = {
   setBalanceMode: jest.fn(),
   getActiveProfit: jest.fn(),
   isActiveEnabled: jest.fn(),
+  getOpenAssets: jest.fn(),
   placeDigitalOption: jest.fn(),
   openBinaryOption: jest.fn(),
   getPosition: jest.fn(),
@@ -67,6 +68,10 @@ jest.mock('../lib/IQOptionAccount', () => ({
 
     isActiveEnabled(...args: any[]) {
       return mockIqOptionAccount.isActiveEnabled(...args)
+    }
+
+    getOpenAssets(...args: any[]) {
+      return mockIqOptionAccount.getOpenAssets(...args)
     }
 
     placeDigitalOption(...args: any[]) {
