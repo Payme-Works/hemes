@@ -1,7 +1,9 @@
 {
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "packages": ["packages/*"],
+  "packages": [
+    "packages/*"
+  ],
   "command": {
     "version": {
       "exact": true,
@@ -15,5 +17,5 @@
       "registry": "https://registry.npmjs.org/"
     }
   },
-  "version": "0.0.1-next.8"
+  "version": "0.0.1-next.9"
 }
