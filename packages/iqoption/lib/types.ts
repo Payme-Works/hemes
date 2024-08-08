@@ -9,8 +9,6 @@ import {
 import { PositionState } from './websocket/events/responses/PositionsState'
 import { WebSocketClient } from './websocket/WebSocketClient'
 
-// .
-
 export interface LogInCredentials {
   email: string
   password: string
