@@ -30,7 +30,7 @@ export class IQOptionProvider implements BaseIQOptionProvider {
       baseURL: 'https://trade.gomerebroker.com/api',
     })
 
-    this.webSocket = new WebSocketClient(this.refreshLogIn)
+    this.webSocket = new WebSocketClient(this.refreshLogIn.bind(this))
   }
 
   public async enableCorsBypass(): Promise<void> {
