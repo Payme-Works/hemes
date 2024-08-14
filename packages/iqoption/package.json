@@ -31,13 +31,13 @@
   },
   "dependencies": {
     "@base-sdk/core": "^0.1.0-1",
-    "@hemes/core": "../core",
+    "@hemes/core": "0.0.1-next.10",
     "axios": "^0.21.1",
     "date-fns": "^2.21.1",
     "date-fns-timezone": "^0.1.4",
     "md5": "2.3.0"
   },
-  "gitHead": "fa2e0d0514775388df64a3e5df0e0d95e810e0c3",
+  "gitHead": "26d6f55201eb107bd22ee73ac6e34b9df767a050",
   "devDependencies": {
     "@types/md5": "^2.3.0",
     "@types/ws": "^7.4.0",

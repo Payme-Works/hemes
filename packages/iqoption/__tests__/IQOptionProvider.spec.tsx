@@ -35,6 +35,10 @@ jest.mock('../lib/websocket/WebSocketClient', () => ({
   WebSocketClient: class MockWebSocketClient implements BaseWebSocketClient {
     history: WebSocketEventHistory[]
 
+    refreshLogIn(): Promise<void> {
+      return Promise.resolve()
+    }
+
     subscribe() {
       return mockWebSocketClient.subscribe()
     }
