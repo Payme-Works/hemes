@@ -24,7 +24,7 @@ export class WebSocketClient implements BaseWebSocketClient {
 
   public history: WebSocketEventHistory[]
 
-  constructor() {
+  constructor(public refreshLogIn: () => Promise<void>) {
     this.subscribers = [new HeartbeatSubscriber(this)]
 
     this.history = []
@@ -81,9 +81,18 @@ export class WebSocketClient implements BaseWebSocketClient {
 
   public async send<Message, Args = undefined>(
     Request: EventRequestConstructor<Message, Args>,
-    args?: CheckForUnion<Args, never, Args>
+    args?: CheckForUnion<Args, never, Args>,
+    attempts = 0
   ): Promise<WebSocketEvent<Message>> {
     const request = new Request()
+
+    if (attempts > 0) {
+      console.log('Retrying request', request.name, attempts)
+    }
+
+    if (attempts > 5) {
+      throw new Error('Max attempts reached')
+    }
 
     while (
       this.webSocket.readyState !== WebSocket.OPEN &&
@@ -91,7 +100,7 @@ export class WebSocketClient implements BaseWebSocketClient {
     ) {
       console.log('Waiting socket to connect to send message...')
 
-      await this.subscribe()
+      await this.refreshLogIn()
 
       await sleep(100)
     }
@@ -117,7 +126,9 @@ export class WebSocketClient implements BaseWebSocketClient {
     } catch (err) {
       console.error(err)
 
-      throw err
+      await this.refreshLogIn()
+
+      return this.send(Request, args, attempts + 1)
     }
 
     return event

@@ -17,6 +17,7 @@ export interface LogInCredentials {
 export interface BaseIQOptionProvider {
   enableCorsBypass(): Promise<void>
   logIn(credentials: LogInCredentials): Promise<BaseIQOptionAccount>
+  refreshLogIn(): Promise<void>
 }
 
 export interface PlaceDigitalOption {
@@ -108,12 +109,14 @@ export interface WaitForOptions<Message> {
 
 export interface BaseWebSocketClient {
   history: WebSocketEventHistory[]
+  refreshLogIn: () => Promise<void>
 
   subscribe(): Promise<void>
 
   send<Message, Args = undefined>(
     Request: EventRequestConstructor<Message, Args>,
-    args?: CheckForUnion<Args, never, Args>
+    args?: CheckForUnion<Args, never, Args>,
+    attempt?: number
   ): Promise<WebSocketEvent<Message>>
   waitFor<Message>(
     Response: EventResponseConstructor<Message>,

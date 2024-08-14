@@ -23,12 +23,14 @@ export class IQOptionProvider implements BaseIQOptionProvider {
 
   private isCorsBypassEnabled: boolean
 
+  private lastLogInCredentials: LogInCredentials
+
   constructor() {
     this.api = axios.create({
       baseURL: 'https://trade.gomerebroker.com/api',
     })
 
-    this.webSocket = new WebSocketClient()
+    this.webSocket = new WebSocketClient(this.refreshLogIn)
   }
 
   public async enableCorsBypass(): Promise<void> {
@@ -42,6 +44,8 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     password,
   }: LogInCredentials): Promise<BaseIQOptionAccount> {
     console.log('Logging in...')
+
+    this.lastLogInCredentials = { email, password }
 
     await this.webSocket.subscribe()
 
@@ -75,5 +79,9 @@ export class IQOptionProvider implements BaseIQOptionProvider {
     await account.setBalanceMode('practice')
 
     return account
+  }
+
+  public async refreshLogIn(): Promise<void> {
+    await this.logIn(this.lastLogInCredentials)
   }
 }
