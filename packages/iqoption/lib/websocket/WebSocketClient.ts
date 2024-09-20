@@ -24,7 +24,7 @@ export class WebSocketClient implements BaseWebSocketClient {
 
   public history: WebSocketEventHistory[]
 
-  public debugMessage: boolean
+  public debugMessage: boolean = false
 
   constructor(public refreshLogIn: () => Promise<void>) {
     this.subscribers = [new HeartbeatSubscriber(this)]

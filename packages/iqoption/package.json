@@ -37,7 +37,7 @@
     "date-fns-timezone": "^0.1.4",
     "md5": "2.3.0"
   },
-  "gitHead": "26d6f55201eb107bd22ee73ac6e34b9df767a050",
+  "gitHead": "b2f34bc12d0786ad6ef79a354aa25abfc3130643",
   "devDependencies": {
     "@types/md5": "^2.3.0",
     "@types/ws": "^7.4.0",
