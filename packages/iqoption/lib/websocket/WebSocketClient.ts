@@ -24,6 +24,8 @@ export class WebSocketClient implements BaseWebSocketClient {
 
   public history: WebSocketEventHistory[]
 
+  public debugMessage: boolean
+
   constructor(public refreshLogIn: () => Promise<void>) {
     this.subscribers = [new HeartbeatSubscriber(this)]
 
@@ -51,6 +53,7 @@ export class WebSocketClient implements BaseWebSocketClient {
         })
 
         if (
+          this.debugMessage &&
           !['heartbeat', 'timeSync', 'positions-state'].includes(event.name)
         ) {
           console.log(
@@ -116,7 +119,10 @@ export class WebSocketClient implements BaseWebSocketClient {
     try {
       this.webSocket.send(JSON.stringify(event))
 
-      if (!['heartbeat', 'timeSync', 'positions-state'].includes(event.name)) {
+      if (
+        this.debugMessage &&
+        !['heartbeat', 'timeSync', 'positions-state'].includes(event.name)
+      ) {
         console.log(
           '⬆',
           format(Date.now(), 'yyyy-MM-dd HH:mm:ss:SSS'),

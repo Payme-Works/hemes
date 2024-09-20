@@ -19,7 +19,7 @@ interface LoginResponse {
 
 export class IQOptionProvider implements BaseIQOptionProvider {
   private api: AxiosInstance
-  private webSocket: WebSocketClient
+  public webSocket: WebSocketClient
 
   private isCorsBypassEnabled: boolean
 
