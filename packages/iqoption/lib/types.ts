@@ -560,6 +560,9 @@ export type Active =
   | 'VIAC'
   | 'TFC'
   | 'BTC'
+  | 'EURCAD-OTC'
+  | 'EURAUD-OTC'
+  | 'EURCHF-OTC'
 
 export enum ActivePair {
   ALL = 0,

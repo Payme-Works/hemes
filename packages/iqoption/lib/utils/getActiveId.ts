@@ -378,6 +378,9 @@ export const activeIds: ActiveIds = {
   VIAC: 1352,
   TFC: 1353,
   BTC: 1354,
+  'EURAUD-OTC': 2120,
+  'EURCAD-OTC': 2117,
+  'EURCHF-OTC': 2131,
 }
 
 export function getActiveId(active: Active): number {
